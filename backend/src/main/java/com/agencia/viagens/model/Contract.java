@@ -1,11 +1,14 @@
 package com.agencia.viagens.model;
 
+import com.agencia.viagens.model.Passenger;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,6 +39,9 @@ public class Contract {
     private String addressCity;
     private String addressState;
     private String addressZip;
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    private List<Passenger> passengers;
 
     private Integer totalPeople;
     private BigDecimal priceTotal;
