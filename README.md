@@ -31,7 +31,7 @@ docs/ # documentação
 ### Backend
 ```bash
 cd backend
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 ### Frontend
