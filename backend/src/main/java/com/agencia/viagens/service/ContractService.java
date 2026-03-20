@@ -1,0 +1,118 @@
+package com.agencia.viagens.service;
+
+import com.agencia.viagens.dto.ContractRequestDTO;
+import com.agencia.viagens.dto.ContractResponseDTO;
+import com.agencia.viagens.model.Contract;
+import com.agencia.viagens.model.ContractStatus;
+import com.agencia.viagens.model.Passenger;
+import com.agencia.viagens.model.Travel;
+import com.agencia.viagens.repository.ContractRepository;
+import com.agencia.viagens.repository.TravelRepository;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class ContractService {
+
+    private final ContractRepository contractRepository;
+    private final TravelRepository travelRepository;
+
+    public ContractService(ContractRepository contractRepository,
+                           TravelRepository travelRepository) {
+        this.contractRepository = contractRepository;
+        this.travelRepository = travelRepository;
+    }
+
+    public List<Contract> findAll() {
+        return contractRepository.findAll();
+    }
+
+    public Contract create(ContractRequestDTO dto) {
+
+        Travel travel = travelRepository.findById(dto.getTravelId())
+                .orElseThrow(() -> new RuntimeException("Travel not found"));
+
+        Contract contract = new Contract();
+
+        contract.setClientName(dto.getClientName());
+        contract.setClientCpf(dto.getClientCpf());
+        contract.setClientRg(dto.getClientRg());
+        contract.setClientBirthDate(dto.getClientBirthDate());
+        contract.setClientPhone(dto.getClientPhone());
+
+        contract.setAddressStreet(dto.getAddressStreet());
+        contract.setAddressNumber(dto.getAddressNumber());
+        contract.setAddressComplement(dto.getAddressComplement());
+        contract.setAddressNeighborhood(dto.getAddressNeighborhood());
+        contract.setAddressCity(dto.getAddressCity());
+        contract.setAddressState(dto.getAddressState());
+        contract.setAddressZip(dto.getAddressZip());
+
+        contract.setTravel(travel);
+        contract.setStatus(ContractStatus.PENDING);
+        contract.setCreatedAt(LocalDateTime.now());
+        contract.setTokenAccess(UUID.randomUUID());
+        if (dto.getPassengers() != null) {
+            List<Passenger> passengers = dto.getPassengers().stream().map(p -> {
+                Passenger passenger = new Passenger();
+                passenger.setName(p.getName());
+                passenger.setCpf(p.getCpf());
+                passenger.setBirthDate(p.getBirthDate());
+
+                passenger.setContract(contract);
+                return passenger;
+            }).toList();
+
+            contract.setPassengers(passengers);
+            contract.setTotalPeople(passengers.size());
+        } else {
+            contract.setTotalPeople(0);
+        }
+
+        return contractRepository.save(contract);
+    }
+
+    public Contract findByToken(UUID token) {
+        return contractRepository.findByTokenAccess(token)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+    }
+
+    public Contract markAsPaid(UUID id) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+        if (!ContractStatus.APPROVED.equals(contract.getStatus())) {
+            throw new RuntimeException("Contract not approved");
+        }
+        contract.setStatus(ContractStatus.PAID);
+        return contractRepository.save(contract);
+    }
+
+    public ContractResponseDTO approve(UUID id) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+        if (!ContractStatus.PENDING.equals(contract.getStatus())) {
+            throw new RuntimeException("Contract not in PENDING status");
+        }
+        BigDecimal price = contract.getTravel().getPriceBase()
+                .multiply(BigDecimal.valueOf(contract.getTotalPeople()));
+        contract.setPriceTotal(price);
+        contract.setPaymentMethod("PIX");
+        contract.setStatus(ContractStatus.APPROVED);
+        contractRepository.save(contract);
+        return new ContractResponseDTO(contract.getId(), contract.getTokenAccess());
+    }
+
+    public Contract confirm(UUID id) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+        if (!ContractStatus.PAID.equals(contract.getStatus())) {
+            throw new RuntimeException("Contract not paid");
+        }
+        contract.setStatus(ContractStatus.CONFIRMED);
+        return contractRepository.save(contract);
+    }
+}

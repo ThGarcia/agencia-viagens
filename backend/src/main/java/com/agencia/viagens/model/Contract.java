@@ -1,7 +1,5 @@
 package com.agencia.viagens.model;
 
-import com.agencia.viagens.model.Passenger;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,6 +45,9 @@ public class Contract {
     private BigDecimal priceTotal;
     private String paymentMethod;
     private LocalDateTime createdAt;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private ContractStatus status;
+
     private UUID tokenAccess;
 }

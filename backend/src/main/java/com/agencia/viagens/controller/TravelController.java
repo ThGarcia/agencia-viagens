@@ -1,34 +1,28 @@
 package com.agencia.viagens.controller;
 
 import com.agencia.viagens.model.Travel;
-import com.agencia.viagens.repository.TravelRepository;
+import com.agencia.viagens.service.TravelService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/travels")
 public class TravelController {
 
-    private final TravelRepository travelRepository;
+    private final TravelService travelService;
 
-    public TravelController(TravelRepository travelRepository) {
-        this.travelRepository = travelRepository;
-    }
-
-    @GetMapping
-    public List<Travel> findAll() {
-        return travelRepository.findAll();
-    }
-
-    @GetMapping("/active")
-    public List<Travel> findActive() {
-        return travelRepository.findByStatus("ACTIVE");
+    public TravelController(TravelService travelService) {
+        this.travelService = travelService;
     }
 
     @PostMapping
     public Travel create(@RequestBody Travel travel) {
-        return travelRepository.save(travel);
+        return travelService.create(travel);
+    }
+
+    @GetMapping
+    public List<Travel> list() {
+        return travelService.findAll();
     }
 }

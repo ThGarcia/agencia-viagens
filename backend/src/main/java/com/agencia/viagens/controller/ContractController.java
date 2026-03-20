@@ -1,74 +1,54 @@
 package com.agencia.viagens.controller;
 
 import com.agencia.viagens.dto.ContractRequestDTO;
-import com.agencia.viagens.dto.PassengerDTO;
+import com.agencia.viagens.dto.ContractResponseDTO;
 import com.agencia.viagens.model.Contract;
-import com.agencia.viagens.model.Passenger;
-import com.agencia.viagens.model.Travel;
 import com.agencia.viagens.repository.ContractRepository;
-import com.agencia.viagens.repository.TravelRepository;
+import com.agencia.viagens.service.ContractService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/contracts")
 public class ContractController {
 
+    private final ContractService contractService;
     private final ContractRepository contractRepository;
-    private final TravelRepository travelRepository;
 
-    public ContractController(ContractRepository contractRepository,
-                              TravelRepository travelRepository) {
+    public ContractController(ContractService contractService, ContractRepository contractRepository) {
+        this.contractService = contractService;
         this.contractRepository = contractRepository;
-        this.travelRepository = travelRepository;
     }
 
     @PostMapping
     public Contract create(@RequestBody ContractRequestDTO dto) {
+        return contractService.create(dto);
+    }
 
-        Travel travel = travelRepository.findById(dto.getTravelId())
-                .orElseThrow(() -> new RuntimeException("Travel not found"));
+    @PutMapping("/{id}/approve")
+    public ContractResponseDTO approve(@PathVariable UUID id) {
+        return contractService.approve(id);
+    }
 
-        Contract contract = new Contract();
+    @GetMapping
+    public List<Contract> list() {
+        return contractService.findAll();
+    }
 
-        contract.setClientName(dto.getClientName());
-        contract.setClientCpf(dto.getClientCpf());
-        contract.setClientRg(dto.getClientRg());
-        contract.setClientBirthDate(dto.getClientBirthDate());
-        contract.setClientPhone(dto.getClientPhone());
+    @PutMapping("/{id}/pay")
+    public Contract pay(@PathVariable UUID id) {
+        return contractService.markAsPaid(id);
+    }
 
-        contract.setAddressStreet(dto.getAddressStreet());
-        contract.setAddressNumber(dto.getAddressNumber());
-        contract.setAddressComplement(dto.getAddressComplement());
-        contract.setAddressNeighborhood(dto.getAddressNeighborhood());
-        contract.setAddressCity(dto.getAddressCity());
-        contract.setAddressState(dto.getAddressState());
-        contract.setAddressZip(dto.getAddressZip());
+    @PutMapping("/{id}/confirm")
+    public Contract confirm(@PathVariable UUID id) {
+        return contractService.confirm(id);
+    }
 
-        contract.setTravel(travel);
-
-        contract.setStatus("PENDING");
-        contract.setPriceTotal(null);
-        contract.setTotalPeople(dto.getPassengers() != null ? dto.getPassengers().size() : 0);
-
-        if (dto.getPassengers() != null) {
-            List<Passenger> passengers = dto.getPassengers().stream().map(p -> {
-                Passenger passenger = new Passenger();
-                passenger.setName(p.getName());
-                passenger.setCpf(p.getCpf());
-                passenger.setRg(p.getRg());
-                passenger.setBirthDate(p.getBirthDate());
-                passenger.setRoomType(p.getRoomType());
-                passenger.setContract(contract);
-                return passenger;
-            }).collect(Collectors.toList());
-
-            contract.setPassengers(passengers);
-        }
-
-        return contractRepository.save(contract);
+    @GetMapping("/token/{token}")
+    public Contract findByToken(@PathVariable UUID token) {
+        return contractService.findByToken(token);
     }
 }
