@@ -54,6 +54,6 @@ cp .env.example .env
 ```
 ---
 
-# 📌 Status do projeto
+# Status do projeto
 
-🚧 Em desenvolvimento
+Em desenvolvimento
