@@ -56,21 +56,22 @@ public class ContractService {
         contract.setStatus(ContractStatus.PENDING);
         contract.setCreatedAt(LocalDateTime.now());
         contract.setTokenAccess(UUID.randomUUID());
-        if (dto.getPassengers() != null) {
+        if (dto.getPassengers() != null && !dto.getPassengers().isEmpty()) {
             List<Passenger> passengers = dto.getPassengers().stream().map(p -> {
                 Passenger passenger = new Passenger();
                 passenger.setName(p.getName());
                 passenger.setCpf(p.getCpf());
+                passenger.setRg(p.getRg());
                 passenger.setBirthDate(p.getBirthDate());
-
+                passenger.setRoomType(p.getRoomType());
                 passenger.setContract(contract);
                 return passenger;
             }).toList();
 
             contract.setPassengers(passengers);
-            contract.setTotalPeople(passengers.size());
+            contract.setTotalPeople(passengers.size() + 1);
         } else {
-            contract.setTotalPeople(0);
+            contract.setTotalPeople(1);
         }
 
         return contractRepository.save(contract);
@@ -97,8 +98,10 @@ public class ContractService {
         if (!ContractStatus.PENDING.equals(contract.getStatus())) {
             throw new RuntimeException("Contract not in PENDING status");
         }
+        int total = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
+        contract.setTotalPeople(total);
         BigDecimal price = contract.getTravel().getPriceBase()
-                .multiply(BigDecimal.valueOf(contract.getTotalPeople()));
+                .multiply(BigDecimal.valueOf(total));
         contract.setPriceTotal(price);
         contract.setPaymentMethod("PIX");
         contract.setStatus(ContractStatus.APPROVED);

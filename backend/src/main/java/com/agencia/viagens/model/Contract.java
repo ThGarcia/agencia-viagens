@@ -1,5 +1,6 @@
 package com.agencia.viagens.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,7 @@ public class Contract {
     private String addressZip;
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Passenger> passengers;
 
     private Integer totalPeople;
@@ -49,5 +51,6 @@ public class Contract {
     @Enumerated(EnumType.STRING)
     private ContractStatus status;
 
+    @Column(unique = true, nullable = false)
     private UUID tokenAccess;
 }

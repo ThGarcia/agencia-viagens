@@ -1,5 +1,6 @@
 package com.agencia.viagens.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class Passenger {
 
     @ManyToOne
     @JoinColumn(name = "contract_id")
+    @JsonBackReference
     private Contract contract;
 
     private String name;
