@@ -1,0 +1,50 @@
+.loader-container {
+  padding: 20px;
+}
+
+.loader-card {
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #1e1e1e;
+  overflow: hidden;
+  position: relative;
+}
+
+.loader-title,
+.loader-line {
+  background: linear-gradient(
+    90deg,
+    #2a2a2a 25%,
+    #3a3a3a 50%,
+    #2a2a2a 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+.loader-title {
+  height: 20px;
+  width: 60%;
+  margin-bottom: 10px;
+}
+
+.loader-line {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.loader-line.short {
+  width: 40%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

@@ -1,18 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 
-import Home from "../pages/Home";
-import CreateContract from "../pages/CreateContract";
-import ContractDetails from "../pages/ContractDetails";
+const Home = lazy(() => import("../pages/Home"));
+const TravelDetails = lazy(() => import("../pages/TravelDetails"));
+const CreateContract = lazy(() => import("../pages/CreateContract"));
+const ContractDetails = lazy(() => import("../pages/ContractDetails"));
 
-import Spinner from "../components/Spinner";
+import Loader from "../components/Loader";
 
 export default function AppRoutes() {
     return (
         <BrowserRouter>
-            <Suspense fallback={<Spinner />}>
+            <Suspense fallback={<Loader />}>
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/viagem/:id" element={<TravelDetails />} />
                     <Route path="/contrato" element={<CreateContract />} />
                     <Route path="/contrato/:token" element={<ContractDetails />} />
                 </Routes>
