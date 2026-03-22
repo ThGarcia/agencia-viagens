@@ -1,6 +1,5 @@
-const BASE_URL = "http://localhost:8080";
+import axios from "axios";
 
-export async function getContracts() {
-    const res = await fetch(`${BASE_URL}/contracts`);
-    return res.json();
-}
+export const api = axios.create({
+    baseURL: "http://localhost:8080",
+});
