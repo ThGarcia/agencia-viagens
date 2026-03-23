@@ -28,7 +28,7 @@ public class Contract {
     private String clientName;
     private String clientCpf;
     private String clientRg;
-    private LocalDate clientBirthDate;
+    private String clientBirthDate;
     private String clientPhone;
 
     private String addressStreet;

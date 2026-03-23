@@ -2,6 +2,7 @@ package com.agencia.viagens.service;
 
 import com.agencia.viagens.dto.ContractRequestDTO;
 import com.agencia.viagens.dto.ContractResponseDTO;
+import com.agencia.viagens.dto.ApproveContractDTO;
 import com.agencia.viagens.model.Contract;
 import com.agencia.viagens.model.ContractStatus;
 import com.agencia.viagens.model.Passenger;
@@ -92,18 +93,26 @@ public class ContractService {
         return contractRepository.save(contract);
     }
 
-    public ContractResponseDTO approve(UUID id) {
+    public ContractResponseDTO approve(UUID id, ApproveContractDTO dto) {
         Contract contract = contractRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contract not found"));
+
         if (!ContractStatus.PENDING.equals(contract.getStatus())) {
             throw new RuntimeException("Contract not in PENDING status");
         }
-        int total = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
-        contract.setTotalPeople(total);
-        BigDecimal price = contract.getTravel().getPriceBase()
-                .multiply(BigDecimal.valueOf(total));
+        int totalPeople = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
+        contract.setTotalPeople(totalPeople);
+
+        BigDecimal price = dto.getPriceTotal() != null
+                ? dto.getPriceTotal()
+                : contract.getTravel().getPriceBase()
+                .multiply(BigDecimal.valueOf(totalPeople));
         contract.setPriceTotal(price);
-        contract.setPaymentMethod("PIX");
+
+        if (dto.getPaymentMethod() == null || dto.getPaymentMethod().isBlank()) {
+            throw new RuntimeException("Payment method is required");
+        }
+        contract.setPaymentMethod(dto.getPaymentMethod());
         contract.setStatus(ContractStatus.APPROVED);
         contractRepository.save(contract);
         return new ContractResponseDTO(contract.getId(), contract.getTokenAccess());

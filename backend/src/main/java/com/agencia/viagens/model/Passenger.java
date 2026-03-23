@@ -26,6 +26,6 @@ public class Passenger {
     private String name;
     private String cpf;
     private String rg;
-    private LocalDate birthDate;
+    private String birthDate;
     private String roomType;
 }

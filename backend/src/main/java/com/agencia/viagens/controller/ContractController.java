@@ -1,14 +1,15 @@
 package com.agencia.viagens.controller;
 
+import com.agencia.viagens.dto.ApproveContractDTO;
 import com.agencia.viagens.dto.ContractRequestDTO;
 import com.agencia.viagens.dto.ContractResponseDTO;
 import com.agencia.viagens.model.Contract;
-import com.agencia.viagens.repository.ContractRepository;
 import com.agencia.viagens.service.ContractService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,20 +21,19 @@ import java.util.UUID;
 public class ContractController {
 
     private final ContractService contractService;
-    private final ContractRepository contractRepository;
 
-    public ContractController(ContractService contractService, ContractRepository contractRepository) {
+    public ContractController(ContractService contractService) {
         this.contractService = contractService;
-        this.contractRepository = contractRepository;
     }
 
     @Operation(
             summary = "Criar contrato",
-            description = "Cria um contrato de viagem com cliente principal e passageiros adicionais.\n\n" +
-                    "Regras:\n" +
-                    "- Cliente principal conta como 1 pessoa\n" +
-                    "- Total de pessoas = cliente + passageiros\n" +
-                    "- Status inicial: PENDING"
+            description = """
+                    Cria um contrato de viagem com cliente principal e passageiros adicionais.
+                    Regras:
+                    - Cliente principal conta como 1 pessoa
+                    - Total de pessoas = cliente + passageiros
+                    - Status inicial: PENDING"""
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Contrato criado com sucesso"),
@@ -69,9 +69,12 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato inválido"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PutMapping("/{id}/approve")
-    public ContractResponseDTO approve(@PathVariable UUID id) {
-        return contractService.approve(id);
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<ContractResponseDTO> approve(
+            @PathVariable UUID id,
+            @RequestBody ApproveContractDTO dto
+    ) {
+        return ResponseEntity.ok(contractService.approve(id, dto));
     }
 
     @Operation(

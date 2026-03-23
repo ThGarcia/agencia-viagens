@@ -17,7 +17,7 @@ public class PassengerDTO {
     @Schema(example = "X.XXX.XXX")
     private String rg;
     @Schema(example = "dd/mm/aaaa")
-    private LocalDate birthDate;
+    private String birthDate;
     @Schema(example = "Casal, Duplo, Triplo, Quadruplo")
     private String roomType;
 }

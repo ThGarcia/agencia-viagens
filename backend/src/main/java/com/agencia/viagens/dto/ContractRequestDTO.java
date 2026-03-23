@@ -20,7 +20,7 @@ public class ContractRequestDTO {
     @Schema(example = "X.XXX.XXX")
     private String clientRg;
     @Schema(example = "dd/mm/aaaa")
-    private LocalDate clientBirthDate;
+    private String clientBirthDate;
     @Schema(example = "(XX) XXXXX-XXXX")
     private String clientPhone;
 

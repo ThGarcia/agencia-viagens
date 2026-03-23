@@ -13,3 +13,14 @@ export interface ContractRequest {
   travelId: string;
   passengers: Passenger[];
 }
+
+export interface Contract extends ContractRequest {
+  id: string;
+  travel: {
+    priceBase: number;
+  };
+  totalPeople: number;
+  priceTotal?: number;
+  tokenAccess?: string;
+  passengers: Array<Passenger & { id?: string }>;
+}
