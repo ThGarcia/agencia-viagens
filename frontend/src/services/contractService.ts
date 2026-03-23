@@ -46,9 +46,7 @@ export async function createContract(
   if (!response.ok) {
     throw new Error("Erro ao criar contrato");
   }
-
   const json = await response.json();
-
   return {
     id: json.id,
     token: json.tokenAccess,
@@ -57,24 +55,23 @@ export async function createContract(
 
 export async function approveContract(
   id: string,
-  data: { priceTotal?: number; paymentMethod?: string } = { paymentMethod: "" }
+  data: { priceTotal: number; paymentMethod: string }
 ) {
   const res = await fetch(`${API_URL}/contracts/${id}/approve`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
-  return res.json();
+  if (!res.ok) throw new Error("Erro ao aprovar");
+  return res.json(); 
 }
 
 export async function getContracts(): Promise<Contract[]> {
   const res = await fetch(`${API_URL}/contracts`);
-
   if (!res.ok) {
     throw new Error("Erro ao buscar contratos");
   }
-
   return res.json();
 }

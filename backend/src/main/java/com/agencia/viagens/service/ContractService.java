@@ -1,8 +1,6 @@
 package com.agencia.viagens.service;
 
-import com.agencia.viagens.dto.ContractRequestDTO;
-import com.agencia.viagens.dto.ContractResponseDTO;
-import com.agencia.viagens.dto.ApproveContractDTO;
+import com.agencia.viagens.dto.*;
 import com.agencia.viagens.model.Contract;
 import com.agencia.viagens.model.ContractStatus;
 import com.agencia.viagens.model.Passenger;
@@ -33,7 +31,6 @@ public class ContractService {
     }
 
     public Contract create(ContractRequestDTO dto) {
-
         Travel travel = travelRepository.findById(dto.getTravelId())
                 .orElseThrow(() -> new RuntimeException("Travel not found"));
 
@@ -57,6 +54,8 @@ public class ContractService {
         contract.setStatus(ContractStatus.PENDING);
         contract.setCreatedAt(LocalDateTime.now());
         contract.setTokenAccess(UUID.randomUUID());
+
+        int totalPeople = 1;
         if (dto.getPassengers() != null && !dto.getPassengers().isEmpty()) {
             List<Passenger> passengers = dto.getPassengers().stream().map(p -> {
                 Passenger passenger = new Passenger();
@@ -68,13 +67,13 @@ public class ContractService {
                 passenger.setContract(contract);
                 return passenger;
             }).toList();
-
             contract.setPassengers(passengers);
-            contract.setTotalPeople(passengers.size() + 1);
-        } else {
-            contract.setTotalPeople(1);
+            totalPeople += passengers.size();
         }
-
+        contract.setTotalPeople(totalPeople);
+        BigDecimal priceTotal = travel.getPriceBase()
+                .multiply(BigDecimal.valueOf(totalPeople));
+        contract.setPriceTotal(priceTotal);
         return contractRepository.save(contract);
     }
 
@@ -100,14 +99,10 @@ public class ContractService {
         if (!ContractStatus.PENDING.equals(contract.getStatus())) {
             throw new RuntimeException("Contract not in PENDING status");
         }
-        int totalPeople = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
-        contract.setTotalPeople(totalPeople);
 
-        BigDecimal price = dto.getPriceTotal() != null
-                ? dto.getPriceTotal()
-                : contract.getTravel().getPriceBase()
-                .multiply(BigDecimal.valueOf(totalPeople));
-        contract.setPriceTotal(price);
+        if (dto.getPriceTotal() != null) {
+            contract.setPriceTotal(dto.getPriceTotal());
+        }
 
         if (dto.getPaymentMethod() == null || dto.getPaymentMethod().isBlank()) {
             throw new RuntimeException("Payment method is required");
@@ -126,5 +121,29 @@ public class ContractService {
         }
         contract.setStatus(ContractStatus.CONFIRMED);
         return contractRepository.save(contract);
+    }
+
+    public ContractResponseDTO getById(UUID id) {
+        Contract c = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contrato não encontrado"));
+
+        ContractResponseDTO dto = new ContractResponseDTO();
+
+        dto.setId(c.getId());
+        dto.setClientName(c.getClientName());
+        dto.setClientPhone(c.getClientPhone());
+        dto.setPriceTotal(c.getPriceTotal());
+        dto.setStatus(c.getStatus());
+
+        dto.setTravel(new TravelDTO(
+                c.getTravel().getId(),
+                c.getTravel().getTitle()
+        ));
+
+        List<PassengerDTO> passengers = c.getPassengers().stream()
+                .map(p -> new PassengerDTO(p.getName()))
+                .toList();
+        dto.setPassengers(passengers);
+        return dto;
     }
 }

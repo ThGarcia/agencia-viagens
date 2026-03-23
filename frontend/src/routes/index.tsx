@@ -8,6 +8,7 @@ const ContractDetails = lazy(() => import("../pages/ContractDetails"));
 const ApproveContract = lazy(() => import("../pages/ApproveContract"));
 const AdminContracts = lazy(() => import("../pages/AdminContracts"));
 const WaitResponse = lazy(() => import("../pages/WaitResponse"));
+const AdminApprove = lazy(() => import ("../pages/AdminApprove"));
 
 import Loader from "../components/Loader";
 
@@ -23,6 +24,7 @@ export default function AppRoutes() {
                     <Route path="/admin/contrato/:id" element={<ApproveContract />} />
                     <Route path="/admin/contratos" element={<AdminContracts />} />
                     <Route path="/obrigado" element={<WaitResponse />} />
+                    <Route path="/admin/contracts/:id" element={<AdminApprove />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>

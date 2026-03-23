@@ -55,6 +55,20 @@ public class ContractController {
     }
 
     @Operation(
+            summary = "Listar contratos por id",
+            description = "Retorna o contrato com o id especifico."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Contrato aprovado"),
+            @ApiResponse(responseCode = "400", description = "Contrato inválido"),
+            @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
+    })
+    @GetMapping("/{id}")
+    public ContractResponseDTO getById(@PathVariable UUID id) {
+        return contractService.getById(id);
+    }
+
+    @Operation(
             summary = "Aprovar contrato",
             description = """
                     Aprova um contrato e calcula o valor total.
@@ -69,7 +83,7 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato inválido"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PostMapping("/{id}/approve")
+    @PutMapping("/{id}/approve")
     public ResponseEntity<ContractResponseDTO> approve(
             @PathVariable UUID id,
             @RequestBody ApproveContractDTO dto
