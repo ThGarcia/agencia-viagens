@@ -21,6 +21,17 @@ export type ContractResponse = {
   tokenAccess: string;
 };
 
+export type Contract = {
+  id: string;
+  clientName: string;
+  status: string;
+  totalPeople: number;
+  travel: {
+    id: string;
+    title: string;
+  };
+};
+
 export async function createContract(
   data: ContractRequest,
 ): Promise<{ id: string; token: string }> {
@@ -55,5 +66,15 @@ export async function approveContract(
     },
     body: JSON.stringify(data),
   });
+  return res.json();
+}
+
+export async function getContracts(): Promise<Contract[]> {
+  const res = await fetch(`${API_URL}/contracts`);
+
+  if (!res.ok) {
+    throw new Error("Erro ao buscar contratos");
+  }
+
   return res.json();
 }

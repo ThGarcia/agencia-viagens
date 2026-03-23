@@ -1,76 +1,97 @@
 import { useEffect, useState } from "react";
 
+import { getContracts } from "../services/contractService";
+import { getTravels, type Travel } from "../services/travelService";
+
 type Contract = {
-  id: string;
-  clientName: string;
-  status: string;
-  travel: {
-    title: string;
-  };
+    id: string;
+    clientName: string;
+    status: string;
+    travel: {
+        id: string;
+        title: string;
+    };
 };
 
 export default function AdminContracts() {
-  const [contracts, setContracts] = useState<Contract[]>([]);
-  const [filter, setFilter] = useState("PENDING");
+    const [contracts, setContracts] = useState<Contract[]>([]);
+    const [statusFilter, setStatusFilter] = useState("PENDING");
+    const [travelFilter, setTravelFilter] = useState("ALL");
+    const [travels, setTravels] = useState<Travel[]>([]);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/contracts")
-      .then(res => res.json())
-      .then(setContracts);
-  }, []);
+    useEffect(() => {
+        getContracts().then(setContracts);
+        getTravels().then(setTravels);
+    }, []);
 
-  const filtered = contracts.filter(c => c.status === filter);
+    const filtered = contracts
+        .filter(c => c.status === statusFilter)
+        .filter(c => travelFilter === "ALL" || c.travel.id === travelFilter);
 
-  const grouped = filtered.reduce<Record<string, Contract[]>>((acc, contract) => {
-    const key = contract.travel.title;
+    const grouped = filtered.reduce<Record<string, Contract[]>>((acc, contract) => {
+        const key = contract.travel.title;
 
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(contract);
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(contract);
 
-    return acc;
-  }, {});
+        return acc;
+    }, {});
 
-  const countByStatus = (status: string) =>
-    contracts.filter(c => c.status === status).length;
+    const countByStatus = (status: string) =>
+        contracts.filter(c => c.status === status).length;
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Painel de Contratos</h1>
+    return (
+        <div style={{ padding: 20 }}>
+            <h1>Painel de Contratos</h1>
 
-      <div style={{ marginBottom: 20 }}>
-        <button onClick={() => setFilter("PENDING")}>
-          Pendentes ({countByStatus("PENDING")})
-        </button>
+            <div style={{ marginBottom: 20 }}>
+                <button onClick={() => setStatusFilter("PENDING")}>
+                    Pendentes ({countByStatus("PENDING")})
+                </button>
 
-        <button onClick={() => setFilter("APPROVED")}>
-          Aprovados ({countByStatus("APPROVED")})
-        </button>
+                <button onClick={() => setStatusFilter("APPROVED")}>
+                    Aprovados ({countByStatus("APPROVED")})
+                </button>
 
-        <button onClick={() => setFilter("PAID")}>
-          Pagos ({countByStatus("PAID")})
-        </button>
+                <button onClick={() => setStatusFilter("PAID")}>
+                    Pagos ({countByStatus("PAID")})
+                </button>
 
-        <button onClick={() => setFilter("CONFIRMED")}>
-          Confirmados ({countByStatus("CONFIRMED")})
-        </button>
-      </div>
-
-      {Object.keys(grouped).map((travel) => (
-        <div key={travel} style={{ marginBottom: 20 }}>
-          <h2>{travel}</h2>
-
-          {grouped[travel].map((c: Contract) => (
-            <div key={c.id} style={{ border: "1px solid #ccc", margin: 5, padding: 10 }}>
-              <p>{c.clientName}</p>
-              <p>Status: {c.status}</p>
-
-              <a href={`/admin/contrato/${c.id}`}>
-                Abrir contrato
-              </a>
+                <button onClick={() => setStatusFilter("CONFIRMED")}>
+                    Confirmados ({countByStatus("CONFIRMED")})
+                </button>
             </div>
-          ))}
+
+            <select
+                value={travelFilter}
+                onChange={(e) => setTravelFilter(e.target.value)}
+                style={{ marginBottom: 20 }}
+            >
+                <option value="ALL">Todas as viagens</option>
+
+                {travels.map((t) => (
+                    <option key={t.id} value={t.id}>
+                        {t.title}
+                    </option>
+                ))}
+            </select>
+
+            {Object.keys(grouped).map((travel) => (
+                <div key={travel} style={{ marginBottom: 20 }}>
+                    <h2>{travel}</h2>
+
+                    {grouped[travel].map((c) => (
+                        <div key={c.id} style={{ border: "1px solid #ccc", margin: 5, padding: 10 }}>
+                            <p>{c.clientName}</p>
+                            <p>Status: {c.status}</p>
+
+                            <a href={`/admin/contracts/${c.id}`}>
+                                Abrir contrato
+                            </a>
+                        </div>
+                    ))}
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
+    );
 }
