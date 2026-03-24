@@ -75,3 +75,11 @@ export async function getContracts(): Promise<Contract[]> {
   }
   return res.json();
 }
+
+export async function getContractByToken(token: string) {
+  const res = await fetch(`${API_URL}/contracts/${token}`);
+  if (!res.ok) {
+    throw new Error("Contrato não encontrado");
+  }
+  return res.json();
+}

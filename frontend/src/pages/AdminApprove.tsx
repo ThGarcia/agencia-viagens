@@ -43,10 +43,10 @@ export default function AdminApprove() {
             paymentMethod,
         });
         setContract({ ...contract, status: "APPROVED" });
-        const link = `http://localhost:5173/contrato/${res.token}`;
+        const link = `http://localhost:5173/contrato/${res.tokenAccess}`;
         const phone = contract.clientPhone.replace(/\D/g, "");
         const message = encodeURIComponent(
-            `Olá ${contract.clientName}! 😊\n\nSeu contrato da viagem *${contract.travel.title}* foi aprovado!\n\nAcesse aqui:\n${link}`
+            `Olá ${contract.clientName}!\n\nSeu contrato da viagem *${contract.travel.title}* foi aprovado!\n\nAcesse aqui:\n${link}`
         );
         window.open(`https://wa.me/55${phone}?text=${message}`, "_blank");
     };
@@ -83,7 +83,7 @@ export default function AdminApprove() {
             />
 
             <button onClick={handleApprove}>
-                ✅ Aprovar e enviar WhatsApp
+                Aprovar e enviar WhatsApp
             </button>
         </div>
     );

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -17,15 +17,25 @@ public class Travel {
     @Id
     @GeneratedValue
     private UUID id;
+    private String imageUrl;
     private String title;
     private String slug;
     private String description;
     private String subtitle;
-    private LocalDate departureDate;
-    private LocalDate returnDate;
+    private String departureDate;
+    private String returnDate;
     private Integer year;
+
     private BigDecimal priceBase;
     private String priceDescription;
-    private String observation;
-    private String status;
+
+    @ElementCollection
+    private List<String> inclusions;
+
+    @ElementCollection
+    private List<String> observations;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private TravelStatus status;
 }

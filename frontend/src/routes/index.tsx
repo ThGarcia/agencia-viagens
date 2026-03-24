@@ -5,7 +5,6 @@ const Home = lazy(() => import("../pages/Home"));
 const TravelDetails = lazy(() => import("../pages/TravelDetails"));
 const CreateContract = lazy(() => import("../pages/CreateContract"));
 const ContractDetails = lazy(() => import("../pages/ContractDetails"));
-const ApproveContract = lazy(() => import("../pages/ApproveContract"));
 const AdminContracts = lazy(() => import("../pages/AdminContracts"));
 const WaitResponse = lazy(() => import("../pages/WaitResponse"));
 const AdminApprove = lazy(() => import ("../pages/AdminApprove"));
@@ -21,7 +20,6 @@ export default function AppRoutes() {
                     <Route path="/viagem/:id" element={<TravelDetails />} />
                     <Route path="/contrato/" element={<CreateContract />} />
                     <Route path="/contrato/:token" element={<ContractDetails />} />
-                    <Route path="/admin/contrato/:id" element={<ApproveContract />} />
                     <Route path="/admin/contratos" element={<AdminContracts />} />
                     <Route path="/obrigado" element={<WaitResponse />} />
                     <Route path="/admin/contracts/:id" element={<AdminApprove />} />

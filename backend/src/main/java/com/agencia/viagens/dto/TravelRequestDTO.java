@@ -4,31 +4,22 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class TravelDTO {
-
-    private UUID id;
+public class TravelRequestDTO {
     private String imageUrl;
     private String title;
-    private String subtitle;
     private String slug;
     private String description;
-    private Integer year;
-
+    private String subtitle;
     private String departureDate;
     private String returnDate;
-
-    private List<String> inclusions;
-    private List<String> observations;
+    private Integer year;
 
     private BigDecimal priceBase;
     private String priceDescription;
-    private String status;
 
+    private List<String> inclusions;
+    private List<String> observations;
 }

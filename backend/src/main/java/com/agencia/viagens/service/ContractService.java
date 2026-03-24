@@ -135,10 +135,22 @@ public class ContractService {
         dto.setPriceTotal(c.getPriceTotal());
         dto.setStatus(c.getStatus());
 
-        dto.setTravel(new TravelDTO(
-                c.getTravel().getId(),
-                c.getTravel().getTitle()
-        ));
+        dto.setTravel(TravelDTO.builder()
+                .id(c.getTravel().getId())
+                .imageUrl(c.getTravel().getImageUrl())
+                .title(c.getTravel().getTitle())
+                .subtitle(c.getTravel().getSubtitle())
+                .slug(c.getTravel().getSlug())
+                .description(c.getTravel().getDescription())
+                .year(c.getTravel().getYear())
+                .departureDate(c.getTravel().getDepartureDate())
+                .returnDate(c.getTravel().getReturnDate())
+                .inclusions(c.getTravel().getInclusions())
+                .observations(c.getTravel().getObservations())
+                .priceBase(c.getTravel().getPriceBase())
+                .priceDescription(c.getTravel().getPriceDescription())
+                .status(c.getTravel().getStatus().name())
+                .build());
 
         List<PassengerDTO> passengers = c.getPassengers().stream()
                 .map(p -> new PassengerDTO(p.getName()))
