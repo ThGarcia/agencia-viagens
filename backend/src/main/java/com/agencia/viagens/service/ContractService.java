@@ -99,18 +99,22 @@ public class ContractService {
         if (!ContractStatus.PENDING.equals(contract.getStatus())) {
             throw new RuntimeException("Contract not in PENDING status");
         }
-
         if (dto.getPriceTotal() != null) {
             contract.setPriceTotal(dto.getPriceTotal());
         }
-
         if (dto.getPaymentMethod() == null || dto.getPaymentMethod().isBlank()) {
             throw new RuntimeException("Payment method is required");
         }
+
         contract.setPaymentMethod(dto.getPaymentMethod());
         contract.setStatus(ContractStatus.APPROVED);
         contractRepository.save(contract);
-        return new ContractResponseDTO(contract.getId(), contract.getTokenAccess());
+
+        return ContractResponseDTO.builder()
+                .id(contract.getId())
+                .tokenAccess(contract.getTokenAccess())
+                .status(contract.getStatus())
+                .build();
     }
 
     public Contract confirm(UUID id) {
@@ -127,33 +131,39 @@ public class ContractService {
         Contract c = contractRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contrato não encontrado"));
 
+        Travel t = c.getTravel();
         ContractResponseDTO dto = new ContractResponseDTO();
 
         dto.setId(c.getId());
+        dto.setTokenAccess(c.getTokenAccess());
         dto.setClientName(c.getClientName());
         dto.setClientPhone(c.getClientPhone());
         dto.setPriceTotal(c.getPriceTotal());
         dto.setStatus(c.getStatus());
 
-        dto.setTravel(TravelDTO.builder()
-                .id(c.getTravel().getId())
-                .imageUrl(c.getTravel().getImageUrl())
-                .title(c.getTravel().getTitle())
-                .subtitle(c.getTravel().getSubtitle())
-                .slug(c.getTravel().getSlug())
-                .description(c.getTravel().getDescription())
-                .year(c.getTravel().getYear())
-                .departureDate(c.getTravel().getDepartureDate())
-                .returnDate(c.getTravel().getReturnDate())
-                .inclusions(c.getTravel().getInclusions())
-                .observations(c.getTravel().getObservations())
-                .priceBase(c.getTravel().getPriceBase())
-                .priceDescription(c.getTravel().getPriceDescription())
-                .status(c.getTravel().getStatus().name())
-                .build());
+        dto.setTravel(new TravelDTO(
+                t.getId(),
+                t.getTitle(),
+                t.getSubtitle(),
+                t.getDescription(),
+                t.getSlug(),
+                t.getImageUrl(),
+                t.getYear(),
+                t.getDepartureDate(),
+                t.getReturnDate(),
+                t.getInclusions(),
+                t.getObservations(),
+                t.getPriceBase(),
+                t.getPriceDescription(),
+                t.getStatus().toString()
+        ));
 
         List<PassengerDTO> passengers = c.getPassengers().stream()
-                .map(p -> new PassengerDTO(p.getName()))
+                .map(p -> {
+                    PassengerDTO pDto = new PassengerDTO();
+                    pDto.setName(p.getName());
+                    return pDto;
+                })
                 .toList();
         dto.setPassengers(passengers);
         return dto;

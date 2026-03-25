@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "../components/ProtectedRoute";
 import { Suspense, lazy } from "react";
 
 const Home = lazy(() => import("../pages/Home"));
@@ -9,6 +10,8 @@ const AdminContracts = lazy(() => import("../pages/AdminContracts"));
 const WaitResponse = lazy(() => import("../pages/WaitResponse"));
 const AdminApprove = lazy(() => import("../pages/AdminApprove"));
 const AdminTravels = lazy(() => import("../pages/AdminTravels"));
+const AdminPanel = lazy(() => import("../pages/AdminPanel"));
+const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 
 import Loader from "../components/Loader";
 
@@ -21,10 +24,35 @@ export default function AppRoutes() {
                     <Route path="/viagem/:id" element={<TravelDetails />} />
                     <Route path="/contrato/" element={<CreateContract />} />
                     <Route path="/contrato/:token" element={<ContractDetails />} />
-                    <Route path="/admin/contratos" element={<AdminContracts />} />
                     <Route path="/obrigado" element={<WaitResponse />} />
-                    <Route path="/admin/contracts/:id" element={<AdminApprove />} />
-                    <Route path="/admin/viagens" element={<AdminTravels />} />
+                    <Route path="/admin" element={<AdminLogin />} />
+                    <Route path="/admin/contratos/:id"
+                        element={
+                            <ProtectedRoute>
+                                <AdminApprove />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/admin/contratos"
+                        element={
+                            <ProtectedRoute>
+                                <AdminContracts />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/admin/viagens"
+                        element={
+                            <ProtectedRoute>
+                                <AdminTravels /></ProtectedRoute>
+                        }
+                    />
+                    <Route path="admin/panel"
+                        element={
+                            <ProtectedRoute>
+                                <AdminPanel />
+                            </ProtectedRoute>
+                        }
+                    />
                 </Routes>
             </Suspense>
         </BrowserRouter>
