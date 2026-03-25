@@ -5,8 +5,10 @@ import com.agencia.viagens.model.*;
 import com.agencia.viagens.repository.TravelRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 public class TravelService {
@@ -36,13 +38,21 @@ public class TravelService {
     public TravelResponseDTO create(TravelRequestDTO dto) {
         Travel t = new Travel();
 
+        t.setImageUrl(dto.getImageUrl());
         t.setTitle(dto.getTitle());
+        t.setSubtitle(dto.getSubtitle());
+        t.setDescription(dto.getDescription());
         t.setDepartureDate(dto.getDepartureDate());
         t.setReturnDate(dto.getReturnDate());
+        t.setYear(dto.getYear());
+
         t.setPriceBase(dto.getPriceBase());
-        t.setImageUrl(dto.getImageUrl());
+        t.setPriceDescription(dto.getPriceDescription());
+
         t.setInclusions(dto.getInclusions());
         t.setObservations(dto.getObservations());
+
+        t.setSlug(generateSlug(dto.getTitle()));
         t.setStatus(TravelStatus.ACTIVE);
 
         return toDTO(repository.save(t));
@@ -52,11 +62,20 @@ public class TravelService {
         Travel t = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Viagem não encontrada"));
 
+        t.setImageUrl(dto.getImageUrl());
         t.setTitle(dto.getTitle());
+        t.setSubtitle(dto.getSubtitle());
+
+        t.setSlug(generateSlug(dto.getTitle()));
+
+        t.setDescription(dto.getDescription());
         t.setDepartureDate(dto.getDepartureDate());
         t.setReturnDate(dto.getReturnDate());
+        t.setYear(dto.getYear());
+
         t.setPriceBase(dto.getPriceBase());
-        t.setImageUrl(dto.getImageUrl());
+        t.setPriceDescription(dto.getPriceDescription());
+
         t.setInclusions(dto.getInclusions());
         t.setObservations(dto.getObservations());
 
@@ -77,17 +96,34 @@ public class TravelService {
         repository.save(t);
     }
 
+    private String generateSlug(String title) {
+        if (title == null) return "";
+        String nfdNormalizedString = Normalizer.normalize(title, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        String withoutAccents = pattern.matcher(nfdNormalizedString).replaceAll("");
+
+        return withoutAccents.toLowerCase()
+                .replaceAll("[^a-z0-9\\s]", "")
+                .trim()
+                .replaceAll("\\s+", "-");
+    }
+
     private TravelResponseDTO toDTO(Travel t) {
-        return new TravelResponseDTO(
-                t.getId(),
-                t.getTitle(),
-                t.getDepartureDate(),
-                t.getReturnDate(),
-                t.getPriceBase(),
-                t.getImageUrl(),
-                t.getInclusions(),
-                t.getObservations(),
-                t.getStatus().name()
-        );
+        return TravelResponseDTO.builder()
+                .id(t.getId())
+                .imageUrl(t.getImageUrl())
+                .title(t.getTitle())
+                .subtitle(t.getSubtitle())
+                .slug(t.getSlug())
+                .description(t.getDescription())
+                .departureDate(t.getDepartureDate())
+                .returnDate(t.getReturnDate())
+                .year(t.getYear())
+                .priceBase(t.getPriceBase())
+                .priceDescription(t.getPriceDescription())
+                .inclusions(t.getInclusions())
+                .observations(t.getObservations())
+                .status(t.getStatus().name())
+                .build();
     }
 }

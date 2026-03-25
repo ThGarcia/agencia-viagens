@@ -10,7 +10,6 @@ import java.util.List;
 public class TravelRequestDTO {
     private String imageUrl;
     private String title;
-    private String slug;
     private String description;
     private String subtitle;
     private String departureDate;

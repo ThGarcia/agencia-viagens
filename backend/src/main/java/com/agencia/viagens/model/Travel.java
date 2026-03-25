@@ -19,9 +19,9 @@ public class Travel {
     private UUID id;
     private String imageUrl;
     private String title;
+    private String subtitle;
     private String slug;
     private String description;
-    private String subtitle;
     private String departureDate;
     private String returnDate;
     private Integer year;
