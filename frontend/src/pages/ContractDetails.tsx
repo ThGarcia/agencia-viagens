@@ -1,55 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getContractByToken } from "../services/contractService";
+import type { ContractResponse } from "../types/contract";
 
 import Loader from "../components/Loader";
 import img from "../assets/contract-logo.png";
 
-type Contract = {
-    id: string;
-    clientName: string;
-    clientCpf: string;
-    clientRg?: string;
-    clientBirthDate: string;
-    clientPhone: string;
-
-    addressStreet: string;
-    addressNumber: string;
-    addressComplement?: string;
-    addressNeighborhood: string;
-    addressCity: string;
-    addressState: string;
-    addressZip: string;
-
-    status: string;
-    priceTotal: number;
-    paymentMethod: string;
-
-    travel: {
-        imageUrl: string;
-        title: string;
-        subtitle: string;
-        description: string;
-        slug: string;
-        departureDate: string;
-        returnDate: string;
-        inclusions: string[];
-        observations?: string[];
-        year: number;
-    };
-
-    passengers: {
-        name: string;
-        cpf: string;
-        rg?: string;
-        birthDate?: string;
-    }[];
-};
-
 export default function ContractDetails() {
     const { token } = useParams();
-    const [contract, setContract] = useState<Contract | null>(null);
-
+    const [contract, setContract] = useState<ContractResponse | null>(null);
+    
     useEffect(() => {
         if (!token) return;
 

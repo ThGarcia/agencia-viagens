@@ -1,35 +1,21 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { approveContract } from "../services/contractService";
+import type { ContractResponse } from "../types/contract";
 
 import Loader from "../components/Loader";
-
-type Contract = {
-    id: string;
-    clientName: string;
-    clientPhone: string;
-    status: string;
-    price: number;
-    travel: {
-        title: string;
-    };
-    passengers: {
-        name: string;
-    }[];
-};
 
 export default function AdminApprove() {
     const { id } = useParams();
 
-    const [contract, setContract] = useState<Contract | null>(null);
+    const [contract, setContract] = useState<ContractResponse | null>(null);
     const [price, setPrice] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("");
 
     useEffect(() => {
-        fetch(`http://localhost:8080/contracts/${id}`)
+        fetch(`http://localhost:8080/contratos/${id}`)
             .then(res => res.json())
             .then(data => {
-                console.log("Dados do contrato:", data);
                 setContract(data);
                 setPrice(data.priceTotal || 0);
             });

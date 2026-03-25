@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { getTravelById, type Travel } from "../services/travelService";
+import { getTravelById } from "../services/travelService";
+import type { TravelResponse as Travel } from "../services/travelService";
 import { createContract } from "../services/contractService";
 
 import Loader from "../components/Loader";
@@ -109,7 +110,7 @@ export default function CreateContract() {
 
             <h2>Passageiros</h2>
 
-            {passengers.map((p, i) => (
+            {passengers.map((_, i) => (
                 <div key={i}>
                     <input placeholder="Nome" onChange={(e) => updatePassenger(i, "name", e.target.value)} />
                     <input placeholder="CPF" onChange={(e) => updatePassenger(i, "cpf", e.target.value)} />

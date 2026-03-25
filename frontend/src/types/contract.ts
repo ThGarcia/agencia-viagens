@@ -1,6 +1,10 @@
+import type { TravelResponse } from "./travel";
+
 export interface Passenger {
+  id?: string;
   name: string;
   cpf: string;
+  rg: string;
   birthDate: string;
   roomType: string;
 }
@@ -8,19 +12,25 @@ export interface Passenger {
 export interface ContractRequest {
   clientName: string;
   clientCpf: string;
+  clientRg: string;
   clientBirthDate: string;
   clientPhone: string;
+  addressStreet: string;
+  addressNumber: string;
+  addressComplement?: string;
+  addressNeighborhood: string;
+  addressCity: string;
+  addressState: string;
+  addressZip: string;
   travelId: string;
   passengers: Passenger[];
 }
 
-export interface Contract extends ContractRequest {
+export interface ContractResponse extends Omit<ContractRequest, 'travelId'> {
   id: string;
-  travel: {
-    priceBase: number;
-  };
-  totalPeople: number;
-  priceTotal?: number;
+  status: "PENDING" | "APPROVED" | "PAID" | "CONFIRMED" | "CANCELLED";
+  priceTotal: number;
+  paymentMethod?: string;
   tokenAccess?: string;
-  passengers: Array<Passenger & { id?: string }>;
+  travel: TravelResponse;
 }

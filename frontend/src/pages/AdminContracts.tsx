@@ -1,23 +1,14 @@
 import { useEffect, useState } from "react";
-
 import { getContracts } from "../services/contractService";
-import { getTravels, type Travel } from "../services/travelService";
-
-type Contract = {
-    id: string;
-    clientName: string;
-    status: string;
-    travel: {
-        id: string;
-        title: string;
-    };
-};
+import { getTravels } from "../services/travelService";
+import type { ContractResponse } from "../types/contract";
+import type { TravelResponse } from "../types/travel";
 
 export default function AdminContracts() {
-    const [contracts, setContracts] = useState<Contract[]>([]);
+    const [contracts, setContracts] = useState<ContractResponse[]>([]);
     const [statusFilter, setStatusFilter] = useState("PENDING");
     const [travelFilter, setTravelFilter] = useState("ALL");
-    const [travels, setTravels] = useState<Travel[]>([]);
+    const [travels, setTravels] = useState<TravelResponse[]>([]);
 
     useEffect(() => {
         getContracts().then(setContracts);
@@ -28,12 +19,10 @@ export default function AdminContracts() {
         .filter(c => c.status === statusFilter)
         .filter(c => travelFilter === "ALL" || c.travel.id === travelFilter);
 
-    const grouped = filtered.reduce<Record<string, Contract[]>>((acc, contract) => {
+    const grouped = filtered.reduce<Record<string, ContractResponse[]>>((acc, contract) => {
         const key = contract.travel.title;
-
         if (!acc[key]) acc[key] = [];
         acc[key].push(contract);
-
         return acc;
     }, {});
 

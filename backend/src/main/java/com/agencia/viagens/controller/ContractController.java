@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Contratos", description = "Gerenciamento de contratos de viagem")
 @RestController
-@RequestMapping("/contracts")
+@RequestMapping("/contratos")
 public class ContractController {
 
     private final ContractService contractService;
@@ -91,7 +91,7 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato inválido"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PutMapping("/{id}/approve")
+    @PutMapping("/{id}/aprovar")
     public ResponseEntity<ContractResponseDTO> approve(
             @PathVariable UUID id,
             @RequestBody ApproveContractDTO dto
@@ -111,7 +111,7 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato não aprovado"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PutMapping("/{id}/pay")
+    @PutMapping("/{id}/pago")
     public Contract pay(@PathVariable UUID id) {
         return contractService.markAsPaid(id);
     }
@@ -128,7 +128,7 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato não pago"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PutMapping("/{id}/confirm")
+    @PutMapping("/{id}/confirmar")
     public Contract confirm(@PathVariable UUID id) {
         return contractService.confirm(id);
     }
