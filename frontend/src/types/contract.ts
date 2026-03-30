@@ -6,7 +6,6 @@ export interface Passenger {
   cpf: string;
   rg: string;
   birthDate: string;
-  roomType: string;
 }
 
 export interface ContractRequest {
@@ -30,7 +29,16 @@ export interface ContractResponse extends Omit<ContractRequest, 'travelId'> {
   id: string;
   status: "PENDING" | "APPROVED" | "PAID" | "CONFIRMED" | "CANCELLED";
   priceTotal: number;
-  paymentMethod?: string;
+  paymentMethod: string;
+  roomType: string;
   tokenAccess?: string;
   travel: TravelResponse;
+}
+
+export interface PassengerListDTO {
+    number: number;
+    name: string;
+    cpf: string;
+    birthDate: string;
+    age: string;
 }

@@ -1,5 +1,5 @@
 import { api } from "./api";
-import type { ContractRequest, ContractResponse } from "../types/contract";
+import type { ContractRequest, ContractResponse, PassengerListDTO } from "../types/contract";
 
 const PATH = "/contratos";
 
@@ -14,7 +14,7 @@ export async function createContract(data: ContractRequest) {
 
 export async function approveContract(
   id: string,
-  data: { priceTotal: number; paymentMethod: string }
+  data: { priceTotal: number; paymentMethod: string; roomType: string }
 ) {
   const response = await api.put(`${PATH}/${id}/aprovar`, data);
   return response.data;
@@ -26,11 +26,16 @@ export async function getContracts(): Promise<ContractResponse[]> {
 }
 
 export async function getContractById(id: string): Promise<ContractResponse> {
-  const response = await api.get<ContractResponse>(`${PATH}/${id}`); 
+  const response = await api.get<ContractResponse>(`${PATH}/${id}`);
   return response.data;
 }
 
 export async function getContractByToken(token: string): Promise<ContractResponse> {
-  const response = await api.get<ContractResponse>(`${PATH}/token/${token}`); 
+  const response = await api.get<ContractResponse>(`${PATH}/token/${token}`); // Sugestão: adicione /token/
+  return response.data;
+}
+
+export async function getPassengersByTravel(travelId: string): Promise<PassengerListDTO[]> {
+  const response = await api.get(`${PATH}/${travelId}/passageiros`);
   return response.data;
 }

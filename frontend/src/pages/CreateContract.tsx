@@ -54,7 +54,7 @@ export default function CreateContract() {
     const addPassenger = () => {
         setPassengers([
             ...passengers,
-            { name: "", cpf: "", rg: "", birthDate: "", roomType: "" },
+            { name: "", cpf: "", rg: "", birthDate: "" },
         ]);
     };
 
@@ -109,7 +109,6 @@ export default function CreateContract() {
                     <input placeholder="CPF" onChange={(e) => updatePassenger(i, "cpf", e.target.value)} />
                     <input placeholder="RG" onChange={(e) => updatePassenger(i, "rg", e.target.value)} />
                     <input placeholder="data nascimento" onChange={(e) => updatePassenger(i, "birthDate", e.target.value)} />
-                    <input placeholder="Quarto" onChange={(e) => updatePassenger(i, "roomType", e.target.value)} />
                 </div>
             ))}
 

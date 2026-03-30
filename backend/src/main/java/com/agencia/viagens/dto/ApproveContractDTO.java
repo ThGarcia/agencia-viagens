@@ -10,4 +10,5 @@ import java.math.BigDecimal;
 public class ApproveContractDTO {
     private BigDecimal priceTotal;
     private String paymentMethod;
+    private String roomType;
 }

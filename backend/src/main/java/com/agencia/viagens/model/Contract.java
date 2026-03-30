@@ -52,4 +52,6 @@ public class Contract {
 
     @Column(unique = true, nullable = false)
     private UUID tokenAccess;
+
+    private String roomType;
 }

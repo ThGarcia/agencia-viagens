@@ -12,6 +12,7 @@ export default function AdminApprove() {
     const [contract, setContract] = useState<ContractResponse | null>(null);
     const [price, setPrice] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("");
+    const [roomType, setRoomType] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,6 +23,7 @@ export default function AdminApprove() {
                 setContract(data);
                 setPrice(data.priceTotal || 0);
                 setPaymentMethod(data.paymentMethod || "");
+                setRoomType(data.roomType || "");
             })
             .catch((err) => {
                 console.error(err);
@@ -36,6 +38,7 @@ export default function AdminApprove() {
             const res = await approveContract(contract.id, {
                 priceTotal: price,
                 paymentMethod,
+                roomType,
             });
             navigate(`/contrato/${res.tokenAccess}`);
         } catch (error) {
@@ -74,6 +77,14 @@ export default function AdminApprove() {
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
             />
+
+            <h3>Quarto</h3>
+            <select onChange={(e) => setRoomType(e.target.value)}>
+                <option value="" disabled>Selecione o tipo de quarto</option>
+                <option value="DOUBLE">Duplo</option>
+                <option value="TRIPLE">Triplo</option>
+                <option value="QUAD">Quadruplo</option>
+            </select>
 
             <button onClick={handleApprove}>
                 Aprovar contrato

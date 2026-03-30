@@ -3,6 +3,7 @@ package com.agencia.viagens.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.agencia.viagens.dto.PassengerListDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -146,5 +147,19 @@ public class ContractController {
     @GetMapping("/token/{token}")
     public Contract findByToken(@PathVariable UUID token) {
         return contractService.findByToken(token);
+    }
+
+    @Operation(
+            summary = "Romming List das viagens",
+            description = """
+                    Retorna os dados completos para romming list e embarque de passageiros."""
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista encontrado"),
+            @ApiResponse(responseCode = "404", description = "Lista não encontrado")
+    })
+    @GetMapping("/{id}/passageiros")
+    public List<PassengerListDTO> getPassenger(@PathVariable UUID id) {
+        return contractService.getPassengerByTravel(id);
     }
 }

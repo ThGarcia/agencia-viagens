@@ -12,6 +12,8 @@ const AdminApprove = lazy(() => import("../pages/AdminApprove"));
 const AdminTravels = lazy(() => import("../pages/AdminTravels"));
 const AdminPanel = lazy(() => import("../pages/AdminPanel"));
 const AdminLogin = lazy(() => import("../pages/AdminLogin"));
+const AdminHomming = lazy(() => import("../pages/AdminHomming"));
+const AdminHommingList = lazy(() => import("../pages/AdminHommingList"));
 
 import Loader from "../components/Loader";
 
@@ -43,7 +45,22 @@ export default function AppRoutes() {
                     <Route path="/admin/viagens"
                         element={
                             <ProtectedRoute>
-                                <AdminTravels /></ProtectedRoute>
+                                <AdminTravels />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/admin/homming/:id"
+                        element={
+                            <ProtectedRoute>
+                                <AdminHomming />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/admin/homming"
+                        element={
+                            <ProtectedRoute>
+                                <AdminHommingList />
+                            </ProtectedRoute>
                         }
                     />
                     <Route path="admin/panel"

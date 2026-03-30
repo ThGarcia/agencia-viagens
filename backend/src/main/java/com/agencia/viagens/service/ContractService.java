@@ -1,16 +1,17 @@
 package com.agencia.viagens.service;
 
 import com.agencia.viagens.dto.*;
-import com.agencia.viagens.model.Contract;
-import com.agencia.viagens.model.ContractStatus;
-import com.agencia.viagens.model.Passenger;
-import com.agencia.viagens.model.Travel;
+import com.agencia.viagens.model.*;
 import com.agencia.viagens.repository.ContractRepository;
 import com.agencia.viagens.repository.TravelRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
     private final TravelRepository travelRepository;
-    private final TravelService travelService; // Injetado para usar o toDTO padrão
+    private final TravelService travelService;
 
     public ContractService(ContractRepository contractRepository,
                            TravelRepository travelRepository,
@@ -82,7 +83,8 @@ public class ContractService {
     }
 
     public Contract findByToken(UUID token) {
-        return contractRepository.findByTokenAccess(token)
+        return contractRepository.
+                findByTokenAccess(token)
                 .orElseThrow(() -> new RuntimeException("Contract not found"));
     }
 
@@ -98,7 +100,7 @@ public class ContractService {
                 .priceTotal(c.getPriceTotal())
                 .paymentMethod(c.getPaymentMethod())
                 .status(c.getStatus())
-                .travel(travelService.findById(c.getTravel().getId())) // Usa a lógica centralizada do TravelService
+                .travel(travelService.findById(c.getTravel().getId()))
                 .passengers(c.getPassengers().stream()
                         .map(p -> {
                             PassengerDTO pDto = new PassengerDTO();
@@ -124,11 +126,15 @@ public class ContractService {
             throw new RuntimeException("Payment method is required");
         }
 
+        if (dto.getRoomType() != null) {
+            contract.setRoomType(dto.getRoomType());
+        }
+
         contract.setPaymentMethod(dto.getPaymentMethod());
         contract.setStatus(ContractStatus.APPROVED);
         contractRepository.save(contract);
 
-        return getById(contract.getId()); // Retorna o DTO completo após aprovar
+        return getById(contract.getId());
     }
 
     public Contract markAsPaid(UUID id) {
@@ -149,5 +155,49 @@ public class ContractService {
         }
         contract.setStatus(ContractStatus.CONFIRMED);
         return contractRepository.save(contract);
+    }
+
+    public List<PassengerListDTO> getPassengerByTravel(UUID travelId) {
+        List<Contract> contracts = contractRepository.findByTravelIdAndStatus(travelId, ContractStatus.CONFIRMED);
+
+        List<PassengerListDTO> list = new ArrayList<>();
+        int counter = 1;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        for (Contract c : contracts) {
+            list.add(new PassengerListDTO(
+                    counter++,
+                    c.getClientName(),
+                    c.getClientCpf(),
+                    c.getClientBirthDate(),
+                    String.valueOf(calculateAgeFromStr(c.getClientBirthDate(), formatter))
+            ));
+
+            if (c.getPassengers() != null) {
+                for (Passenger p : c.getPassengers()) {
+                    String pBirthDateStr = p.getBirthDate() != null ? p.getBirthDate() : "";
+                    int age = calculateAgeFromStr(pBirthDateStr, formatter);
+
+                    list.add(new PassengerListDTO(
+                            counter++,
+                            p.getName(),
+                            p.getCpf(),
+                            pBirthDateStr,
+                            String.valueOf(age)
+                    ));
+                }
+            }
+        }
+        return list;
+    }
+
+    private int calculateAgeFromStr(String birthDateStr, DateTimeFormatter formatter) {
+        if (birthDateStr == null || birthDateStr.isBlank()) return 0;
+        try {
+            LocalDate birthDate = LocalDate.parse(birthDateStr, formatter);
+            return Period.between(birthDate, LocalDate.now()).getYears();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
