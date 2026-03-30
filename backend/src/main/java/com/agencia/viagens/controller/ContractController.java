@@ -143,7 +143,7 @@ public class ContractController {
             @ApiResponse(responseCode = "200", description = "Contrato encontrado"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @GetMapping("/{token}")
+    @GetMapping("/token/{token}")
     public Contract findByToken(@PathVariable UUID token) {
         return contractService.findByToken(token);
     }

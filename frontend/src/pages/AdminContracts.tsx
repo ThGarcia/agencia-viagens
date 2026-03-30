@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getContracts } from "../services/contractService";
 import { getTravels } from "../services/travelService";
 import type { ContractResponse } from "../types/contract";
@@ -9,6 +10,7 @@ export default function AdminContracts() {
     const [statusFilter, setStatusFilter] = useState("PENDING");
     const [travelFilter, setTravelFilter] = useState("ALL");
     const [travels, setTravels] = useState<TravelResponse[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getContracts().then(setContracts);
@@ -35,19 +37,19 @@ export default function AdminContracts() {
 
             <div style={{ marginBottom: 20 }}>
                 <button onClick={() => setStatusFilter("PENDING")}>
-                    Pendentes ({countByStatus("PENDING")})
+                    🔴 Pendentes ({countByStatus("PENDING")})
                 </button>
-
                 <button onClick={() => setStatusFilter("APPROVED")}>
-                    Aprovados ({countByStatus("APPROVED")})
+                    🟡 Aprovados ({countByStatus("APPROVED")})
                 </button>
-
                 <button onClick={() => setStatusFilter("PAID")}>
-                    Pagos ({countByStatus("PAID")})
+                    🔵 Pagos ({countByStatus("PAID")})
                 </button>
-
                 <button onClick={() => setStatusFilter("CONFIRMED")}>
-                    Confirmados ({countByStatus("CONFIRMED")})
+                    🟢 Confirmados ({countByStatus("CONFIRMED")})
+                </button>
+                <button onClick={() => setStatusFilter("CANCELLED")}>
+                    ⚫ Cancelados ({countByStatus("CANCELLED")})
                 </button>
             </div>
 
@@ -74,9 +76,12 @@ export default function AdminContracts() {
                             <p>{c.clientName}</p>
                             <p>Status: {c.status}</p>
 
-                            <a href={`/admin/contracts/${c.id}`}>
+                            <button 
+                                onClick={() => navigate(`/admin/contratos/${c.id}`)}
+                                style={{ cursor: "pointer" }}
+                            >
                                 Abrir contrato
-                            </a>
+                            </button>
                         </div>
                     ))}
                 </div>

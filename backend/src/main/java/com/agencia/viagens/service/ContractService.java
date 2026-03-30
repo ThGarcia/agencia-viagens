@@ -19,11 +19,14 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
     private final TravelRepository travelRepository;
+    private final TravelService travelService; // Injetado para usar o toDTO padrão
 
     public ContractService(ContractRepository contractRepository,
-                           TravelRepository travelRepository) {
+                           TravelRepository travelRepository,
+                           TravelService travelService) {
         this.contractRepository = contractRepository;
         this.travelRepository = travelRepository;
+        this.travelService = travelService;
     }
 
     public List<Contract> findAll() {
@@ -35,7 +38,6 @@ public class ContractService {
                 .orElseThrow(() -> new RuntimeException("Travel not found"));
 
         Contract contract = new Contract();
-
         contract.setClientName(dto.getClientName());
         contract.setClientCpf(dto.getClientCpf());
         contract.setClientRg(dto.getClientRg());
@@ -55,7 +57,6 @@ public class ContractService {
         contract.setCreatedAt(LocalDateTime.now());
         contract.setTokenAccess(UUID.randomUUID());
 
-        int totalPeople = 1;
         if (dto.getPassengers() != null && !dto.getPassengers().isEmpty()) {
             List<Passenger> passengers = dto.getPassengers().stream().map(p -> {
                 Passenger passenger = new Passenger();
@@ -67,19 +68,67 @@ public class ContractService {
                 passenger.setContract(contract);
                 return passenger;
             }).toList();
+
             contract.setPassengers(passengers);
-            totalPeople += passengers.size();
+            contract.setTotalPeople(passengers.size() + 1);
+            BigDecimal priceTotal = travel.getPriceBase().multiply(BigDecimal.valueOf(contract.getTotalPeople()));
+            contract.setPriceTotal(priceTotal);
+        } else {
+            contract.setTotalPeople(1);
+            contract.setPriceTotal(travel.getPriceBase());
         }
-        contract.setTotalPeople(totalPeople);
-        BigDecimal priceTotal = travel.getPriceBase()
-                .multiply(BigDecimal.valueOf(totalPeople));
-        contract.setPriceTotal(priceTotal);
+
         return contractRepository.save(contract);
     }
 
     public Contract findByToken(UUID token) {
         return contractRepository.findByTokenAccess(token)
                 .orElseThrow(() -> new RuntimeException("Contract not found"));
+    }
+
+    public ContractResponseDTO getById(UUID id) {
+        Contract c = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contrato não encontrado"));
+
+        return ContractResponseDTO.builder()
+                .id(c.getId())
+                .tokenAccess(c.getTokenAccess())
+                .clientName(c.getClientName())
+                .clientPhone(c.getClientPhone())
+                .priceTotal(c.getPriceTotal())
+                .paymentMethod(c.getPaymentMethod())
+                .status(c.getStatus())
+                .travel(travelService.findById(c.getTravel().getId())) // Usa a lógica centralizada do TravelService
+                .passengers(c.getPassengers().stream()
+                        .map(p -> {
+                            PassengerDTO pDto = new PassengerDTO();
+                            pDto.setName(p.getName());
+                            return pDto;
+                        }).toList())
+                .build();
+    }
+
+    public ContractResponseDTO approve(UUID id, ApproveContractDTO dto) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        if (!ContractStatus.PENDING.equals(contract.getStatus())) {
+            throw new RuntimeException("Contract not in PENDING status");
+        }
+
+        if (dto.getPriceTotal() != null) {
+            contract.setPriceTotal(dto.getPriceTotal());
+        }
+
+        if (dto.getPaymentMethod() == null || dto.getPaymentMethod().isBlank()) {
+            throw new RuntimeException("Payment method is required");
+        }
+
+        contract.setPaymentMethod(dto.getPaymentMethod());
+        contract.setStatus(ContractStatus.APPROVED);
+        contractRepository.save(contract);
+
+        return getById(contract.getId()); // Retorna o DTO completo após aprovar
     }
 
     public Contract markAsPaid(UUID id) {
@@ -92,31 +141,6 @@ public class ContractService {
         return contractRepository.save(contract);
     }
 
-    public ContractResponseDTO approve(UUID id, ApproveContractDTO dto) {
-        Contract contract = contractRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
-
-        if (!ContractStatus.PENDING.equals(contract.getStatus())) {
-            throw new RuntimeException("Contract not in PENDING status");
-        }
-        if (dto.getPriceTotal() != null) {
-            contract.setPriceTotal(dto.getPriceTotal());
-        }
-        if (dto.getPaymentMethod() == null || dto.getPaymentMethod().isBlank()) {
-            throw new RuntimeException("Payment method is required");
-        }
-
-        contract.setPaymentMethod(dto.getPaymentMethod());
-        contract.setStatus(ContractStatus.APPROVED);
-        contractRepository.save(contract);
-
-        return ContractResponseDTO.builder()
-                .id(contract.getId())
-                .tokenAccess(contract.getTokenAccess())
-                .status(contract.getStatus())
-                .build();
-    }
-
     public Contract confirm(UUID id) {
         Contract contract = contractRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Contract not found"));
@@ -125,47 +149,5 @@ public class ContractService {
         }
         contract.setStatus(ContractStatus.CONFIRMED);
         return contractRepository.save(contract);
-    }
-
-    public ContractResponseDTO getById(UUID id) {
-        Contract c = contractRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contrato não encontrado"));
-
-        Travel t = c.getTravel();
-        ContractResponseDTO dto = new ContractResponseDTO();
-
-        dto.setId(c.getId());
-        dto.setTokenAccess(c.getTokenAccess());
-        dto.setClientName(c.getClientName());
-        dto.setClientPhone(c.getClientPhone());
-        dto.setPriceTotal(c.getPriceTotal());
-        dto.setStatus(c.getStatus());
-
-        dto.setTravel(new TravelDTO(
-                t.getId(),
-                t.getTitle(),
-                t.getSubtitle(),
-                t.getDescription(),
-                t.getSlug(),
-                t.getImageUrl(),
-                t.getYear(),
-                t.getDepartureDate(),
-                t.getReturnDate(),
-                t.getInclusions(),
-                t.getObservations(),
-                t.getPriceBase(),
-                t.getPriceDescription(),
-                t.getStatus().toString()
-        ));
-
-        List<PassengerDTO> passengers = c.getPassengers().stream()
-                .map(p -> {
-                    PassengerDTO pDto = new PassengerDTO();
-                    pDto.setName(p.getName());
-                    return pDto;
-                })
-                .toList();
-        dto.setPassengers(passengers);
-        return dto;
     }
 }

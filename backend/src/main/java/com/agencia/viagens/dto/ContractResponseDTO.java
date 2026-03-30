@@ -18,7 +18,8 @@ public class ContractResponseDTO {
     private String clientName;
     private String clientPhone;
     private BigDecimal priceTotal;
+    private String paymentMethod;
     private ContractStatus status;
-    private TravelDTO travel;
+    private TravelResponseDTO travel;
     private List<PassengerDTO> passengers;
 }

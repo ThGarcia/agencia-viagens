@@ -21,7 +21,7 @@ export default function AdminTravels() {
         year: new Date().getFullYear(),
         priceBase: 0,
         priceDescription: "",
-        inclusions: "", 
+        inclusions: "",
         observations: "",
     });
 
@@ -129,9 +129,13 @@ export default function AdminTravels() {
             <h2>Ativadas</h2>
             {active.map(t => (
                 <div key={t.id} style={{ border: "1px solid green", margin: 5, padding: 10 }}>
-                    <strong>{t.title}</strong>
-                    <p>{t.subtitle}</p>
-
+                    <strong>Viagem: {t.title}</strong>
+                    <p>{t.description}</p>
+                    <p>{t.departureDate} - {t.returnDate}</p>
+                    <p>Valor: {t.priceBase.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                    })}</p>
                     <button onClick={() => handleEdit(t)}>Editar</button>
                     <button onClick={() => handleToggle(t)}>Desativar</button>
                 </div>

@@ -1,18 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { getTravelById } from "../services/travelService";
-import type { TravelResponse as Travel } from "../services/travelService";
 import { createContract } from "../services/contractService";
+import type { TravelResponse as Travel } from "../types/travel";
+import type { Passenger, ContractRequest } from "../types/contract";
 
 import Loader from "../components/Loader";
-
-type Passenger = {
-    name: string;
-    cpf: string;
-    rg: string;
-    birthDate: string;
-    roomType: string;
-}
 
 export default function CreateContract() {
     const [params] = useSearchParams();
@@ -67,7 +60,7 @@ export default function CreateContract() {
 
     const handleSubmit = async () => {
         try {
-            const data = {
+            const data: ContractRequest = {
                 ...form,
                 travelId: travelId,
                 passengers,

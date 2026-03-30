@@ -9,7 +9,7 @@ export const getTravels = async () => {
 };
 
 export const getTravelById = async (id: string) => {
-  const res = await api.get<TravelResponse>(`/admin/viagens/${id}`);
+  const res = await api.get<TravelResponse>(`/viagens/${id}`);
   return res.data;
 };
 

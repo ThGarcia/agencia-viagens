@@ -26,10 +26,10 @@ export default function TravelDetails() {
 
     return (
         <div style={{ padding: 20 }}>
-            <h1>{travel.title}</h1>
-            <h3>{travel.subtitle}</h3>
-            <p>{travel.description}</p>
-            <p>💰 R$ {travel.priceBase.toLocaleString("pt-BR", {
+            <h1>🚌 {travel.title}</h1>
+            <h3>📝 {travel.subtitle}</h3>
+            <p>💬 {travel.description}</p>
+            <p>💰 {travel.priceBase.toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL",
             })}</p>

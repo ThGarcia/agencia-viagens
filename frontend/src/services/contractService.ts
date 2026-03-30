@@ -25,7 +25,12 @@ export async function getContracts(): Promise<ContractResponse[]> {
   return response.data;
 }
 
-export async function getContractByToken(token: string) {
-  const response = await api.get(`${PATH}/${token}`);
+export async function getContractById(id: string): Promise<ContractResponse> {
+  const response = await api.get<ContractResponse>(`${PATH}/${id}`); 
+  return response.data;
+}
+
+export async function getContractByToken(token: string): Promise<ContractResponse> {
+  const response = await api.get<ContractResponse>(`${PATH}/token/${token}`); 
   return response.data;
 }

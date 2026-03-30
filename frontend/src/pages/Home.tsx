@@ -27,14 +27,14 @@ export default function Home() {
 
       {travels.map((travel) => (
         <div key={travel.id} onClick={() => navigate(`/viagem/${travel.id}`)} style={{ border: "1px solid #ccc", margin: 10, padding: 10, cursor: "pointer" }}>
-          <h2>{travel.title}</h2>
-          <p>{travel.subtitle}</p>
-          <p>💰 R$ {travel.priceBase.toLocaleString("pt-BR", {
+          <h2>🚌 {travel.title}</h2>
+          <p>📝 {travel.description}</p>
+          <p>📅 Ida: {travel.departureDate}</p>
+          <p>📅 Volta: {travel.returnDate}</p>
+          <p>💰 {travel.priceBase.toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL",
           })}</p>
-          <p>📅 Ida: {travel.departureDate}</p>
-          <p>📅 Volta: {travel.returnDate}</p>
         </div>
       ))}
     </div>

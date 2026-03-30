@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { approveContract } from "../services/contractService";
 import type { ContractResponse } from "../types/contract";
+import { getContractById } from "../services/contractService";
 
 import Loader from "../components/Loader";
 
@@ -11,30 +12,36 @@ export default function AdminApprove() {
     const [contract, setContract] = useState<ContractResponse | null>(null);
     const [price, setPrice] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`http://localhost:8080/contratos/${id}`)
-            .then(res => res.json())
+        if (!id) return;
+
+        getContractById(id)
             .then(data => {
                 setContract(data);
                 setPrice(data.priceTotal || 0);
+                setPaymentMethod(data.paymentMethod || "");
+            })
+            .catch((err) => {
+                console.error(err);
+                alert("Contrato não encontrado no banco de dados.");
             });
     }, [id]);
 
     if (!contract) return <Loader />;
 
     const handleApprove = async () => {
-        const res = await approveContract(contract.id, {
-            priceTotal: price,
-            paymentMethod,
-        });
-        setContract({ ...contract, status: "APPROVED" });
-        const link = `http://localhost:5173/contrato/${res.tokenAccess}`;
-        const phone = contract.clientPhone.replace(/\D/g, "");
-        const message = encodeURIComponent(
-            `Olá ${contract.clientName}!\n\nSeu contrato da viagem *${contract.travel.title}* foi aprovado!\n\nAcesse aqui:\n${link}`
-        );
-        window.open(`https://wa.me/55${phone}?text=${message}`, "_blank");
+        try {
+            const res = await approveContract(contract.id, {
+                priceTotal: price,
+                paymentMethod,
+            });
+            navigate(`/contrato/${res.tokenAccess}`);
+        } catch (error) {
+            console.error("Erro na aprovação:", error);
+            alert("Erro ao aprovar contrato");
+        }
     };
 
     return (
@@ -42,7 +49,7 @@ export default function AdminApprove() {
             <h1>Contrato</h1>
 
             <h2>{contract.clientName}</h2>
-            <p>📍 {contract?.travel?.title}</p>
+            <p>📍 {contract.travel.title}</p>
             <p>📱 {contract.clientPhone}</p>
 
             <h3>Passageiros</h3>
@@ -69,7 +76,7 @@ export default function AdminApprove() {
             />
 
             <button onClick={handleApprove}>
-                Aprovar e enviar WhatsApp
+                Aprovar contrato
             </button>
         </div>
     );
