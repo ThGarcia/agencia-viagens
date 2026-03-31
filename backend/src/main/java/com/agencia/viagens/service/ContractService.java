@@ -165,12 +165,14 @@ public class ContractService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         for (Contract c : contracts) {
+            String room = c.getRoomType() != null ? c.getRoomType() : "Não definido";
             list.add(new PassengerListDTO(
                     counter++,
                     c.getClientName(),
                     c.getClientCpf(),
                     c.getClientBirthDate(),
-                    String.valueOf(calculateAgeFromStr(c.getClientBirthDate(), formatter))
+                    String.valueOf(calculateAgeFromStr(c.getClientBirthDate(), formatter)),
+                    room
             ));
 
             if (c.getPassengers() != null) {
@@ -183,7 +185,8 @@ public class ContractService {
                             p.getName(),
                             p.getCpf(),
                             pBirthDateStr,
-                            String.valueOf(age)
+                            String.valueOf(age),
+                            room
                     ));
                 }
             }
@@ -199,5 +202,15 @@ public class ContractService {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public Contract cancel(UUID id) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+        if (ContractStatus.CANCELLED.equals(contract.getStatus())) {
+            throw new RuntimeException("Contract is already cancelled");
+        }
+        contract.setStatus(ContractStatus.CANCELLED);
+        return contractRepository.save(contract);
     }
 }

@@ -39,3 +39,18 @@ export async function getPassengersByTravel(travelId: string): Promise<Passenger
   const response = await api.get(`${PATH}/${travelId}/passageiros`);
   return response.data;
 }
+
+export async function confirmContract(id: string) {
+  const response = await api.patch(`${PATH}/${id}/confirmar`);
+  return response.data;
+}
+
+export async function cancelContract(id: string) {
+  const response = await api.patch(`${PATH}/${id}/cancelar`);
+  return response.data;
+}
+
+export async function markAsPaid(id: string) {
+  const response = await api.patch(`${PATH}/${id}/pago`);
+  return response.data;
+}

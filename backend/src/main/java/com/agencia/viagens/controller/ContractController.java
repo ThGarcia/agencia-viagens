@@ -5,13 +5,7 @@ import java.util.UUID;
 
 import com.agencia.viagens.dto.PassengerListDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.agencia.viagens.dto.ApproveContractDTO;
 import com.agencia.viagens.dto.ContractRequestDTO;
@@ -112,9 +106,9 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato não aprovado"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PutMapping("/{id}/pago")
-    public Contract pay(@PathVariable UUID id) {
-        return contractService.markAsPaid(id);
+    @PatchMapping("/{id}/pago")
+    public ResponseEntity<Contract> markAsPaid(@PathVariable UUID id) {
+        return ResponseEntity.ok(contractService.markAsPaid(id));
     }
 
     @Operation(
@@ -129,7 +123,7 @@ public class ContractController {
             @ApiResponse(responseCode = "400", description = "Contrato não pago"),
             @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
     })
-    @PutMapping("/{id}/confirmar")
+    @PatchMapping("/{id}/confirmar")
     public Contract confirm(@PathVariable UUID id) {
         return contractService.confirm(id);
     }
@@ -161,5 +155,19 @@ public class ContractController {
     @GetMapping("/{id}/passageiros")
     public List<PassengerListDTO> getPassenger(@PathVariable UUID id) {
         return contractService.getPassengerByTravel(id);
+    }
+
+    @Operation(
+            summary = "Cancelar contrato",
+            description = """
+                    Lógica para cancelar contratos."""
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Contrato cancelado"),
+            @ApiResponse(responseCode = "404", description = "Problema ao cancelar contrato")
+    })
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Contract> cancel(@PathVariable UUID id) {
+        return ResponseEntity.ok(contractService.cancel(id));
     }
 }

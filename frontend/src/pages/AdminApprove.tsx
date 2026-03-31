@@ -81,6 +81,7 @@ export default function AdminApprove() {
             <h3>Quarto</h3>
             <select onChange={(e) => setRoomType(e.target.value)}>
                 <option value="" disabled>Selecione o tipo de quarto</option>
+                <option value="COUPLE">Casal</option>
                 <option value="DOUBLE">Duplo</option>
                 <option value="TRIPLE">Triplo</option>
                 <option value="QUAD">Quadruplo</option>

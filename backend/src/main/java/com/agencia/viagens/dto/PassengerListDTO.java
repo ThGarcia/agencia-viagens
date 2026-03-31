@@ -12,4 +12,5 @@ public class PassengerListDTO {
     private String cpf;
     private String birthDate;
     private String age;
+    private String roomType;
 }

@@ -41,4 +41,5 @@ export interface PassengerListDTO {
     cpf: string;
     birthDate: string;
     age: string;
+    roomType: string;
 }

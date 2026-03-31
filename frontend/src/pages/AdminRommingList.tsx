@@ -9,7 +9,7 @@ interface Travel {
     returnDate: string;
 }
 
-export default function AdminViagensList() {
+export default function AdminRommingList() {
     const [viagens, setViagens] = useState<Travel[]>([]);
 
     useEffect(() => {
@@ -20,7 +20,7 @@ export default function AdminViagensList() {
 
     return (
         <div style={{ padding: 20 }}>
-            <h1>Hooming Lists</h1>
+            <h1>Rooming Lists</h1>
             <div style={{ display: "grid", gap: "10px", marginTop: 20 }}>
                 {viagens.map(v => (
                     <div key={v.id} style={{ padding: 15, border: "1px solid #ccc", borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
