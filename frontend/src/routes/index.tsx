@@ -14,6 +14,8 @@ const AdminPanel = lazy(() => import("../pages/AdminPanel"));
 const AdminLogin = lazy(() => import("../pages/AdminLogin"));
 const AdminRomming = lazy(() => import("../pages/AdminRomming"));
 const AdminRommingList = lazy(() => import("../pages/AdminRommingList"));
+const AdminFinancial = lazy(() => import("../pages/AdminFinancial"));
+const AdminFinancialList = lazy(() => import("../pages/AdminFinancialList"));
 
 import Loader from "../components/Loader";
 
@@ -60,6 +62,20 @@ export default function AppRoutes() {
                         element={
                             <ProtectedRoute>
                                 <AdminRommingList />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/admin/financeiro/:travelId"
+                        element={
+                            <ProtectedRoute>
+                                <AdminFinancial />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/admin/financeiro"
+                        element={
+                            <ProtectedRoute>
+                                <AdminFinancialList />
                             </ProtectedRoute>
                         }
                     />

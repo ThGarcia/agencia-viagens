@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,4 +55,7 @@ public class Contract {
     private UUID tokenAccess;
 
     private String roomType;
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    private List<Payment> payments = new ArrayList<>();
 }

@@ -26,6 +26,10 @@ export default function AdminPanel() {
         <Link to="/admin/homming">
           <button>📋 Homming List</button>
         </Link>
+
+        <Link to="/admin/financeiro">
+          <button>💰 Financeiro</button>
+        </Link>
       </div>
 
       <button onClick={handleLogout} style={{ marginTop: 20 }}>

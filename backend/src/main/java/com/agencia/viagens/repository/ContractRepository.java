@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface ContractRepository extends JpaRepository<Contract, UUID> {
     Optional<Contract> findByTokenAccess(UUID token);
     List<Contract> findByTravelIdAndStatus(UUID travelId, ContractStatus status);
+    List<Contract> findByTravelId(UUID travelId);
 }
