@@ -25,7 +25,7 @@ export default function AdminRommingList() {
                 {viagens.map(v => (
                     <div key={v.id} style={{ padding: 15, border: "1px solid #ccc", borderRadius: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
-                            <strong>{v.title}</strong> - {v.departureDate} ({v.returnDate})
+                            <strong>{v.title}</strong> - {v.departureDate} a {v.returnDate}
                         </div>
                         <Link to={`/admin/homming/${v.id}`}>
                             <button style={{ backgroundColor: "#3498db", color: "white", border: "none", padding: "8px 15px", borderRadius: 5, cursor: "pointer" }}>

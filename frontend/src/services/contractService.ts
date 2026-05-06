@@ -31,7 +31,7 @@ export async function getContractById(id: string): Promise<ContractResponse> {
 }
 
 export async function getContractByToken(token: string): Promise<ContractResponse> {
-  const response = await api.get<ContractResponse>(`${PATH}/token/${token}`); // Sugestão: adicione /token/
+  const response = await api.get<ContractResponse>(`${PATH}/token/${token}`); 
   return response.data;
 }
 

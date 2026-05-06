@@ -13,11 +13,11 @@ export interface TravelCost {
 }
 
 export interface FinancialReport {
-    totalExpected: number;    // Bruto vendido
-    totalReceived: number;    // Já pago
-    totalRemaining: number;   // Falta receber
-    totalCosts: number;       // Gastos (Bus/Hotel)
-    netProfit: number;        // Lucro real/projetado
+    totalExpected: number;    
+    totalReceived: number;   
+    totalRemaining: number;   
+    totalCosts: number;     
+    netProfit: number;       
     confirmedPassengers: number;
     costs: TravelCost[];
 }

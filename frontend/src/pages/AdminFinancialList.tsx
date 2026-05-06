@@ -30,7 +30,7 @@ export default function AdminFinancialList() {
                     }}>
                         <div>
                             <strong>{t.title}</strong>
-                            <p style={{ margin: 0, fontSize: "0.8rem", color: "#666" }}>Data: {t.startDate}</p>
+                            <p style={{ margin: 0, fontSize: "0.8rem", color: "#666" }}>{t.departureDate}</p>
                         </div>
                         <Link to={`/admin/financeiro/${t.id}`}>
                             <button style={{ backgroundColor: "#27ae60", color: "white" }}>
