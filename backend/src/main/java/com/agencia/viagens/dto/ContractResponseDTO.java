@@ -22,4 +22,5 @@ public class ContractResponseDTO {
     private ContractStatus status;
     private TravelResponseDTO travel;
     private List<PassengerDTO> passengers;
+    private List<ClientPaymentDTO> clientPayments;
 }

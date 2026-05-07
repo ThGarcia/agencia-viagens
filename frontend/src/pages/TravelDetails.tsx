@@ -27,6 +27,7 @@ export default function TravelDetails() {
     return (
         <div style={{ padding: 20 }}>
             <h1>🚌 {travel.title}</h1>
+            <img src={travel.imageUrl} alt={travel.title} style={{ width: "75%", height: "auto", marginBottom: 20 }} />
             <h3>📝 {travel.subtitle}</h3>
             <p>💬 {travel.description}</p>
             <p>💰 {travel.priceBase.toLocaleString("pt-BR", {

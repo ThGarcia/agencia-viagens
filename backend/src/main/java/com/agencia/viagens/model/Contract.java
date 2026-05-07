@@ -43,6 +43,10 @@ public class Contract {
     @JsonManagedReference
     private List<Passenger> passengers;
 
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ClientPayment> clientPayments;
+
     private Integer totalPeople;
     private BigDecimal priceTotal;
     private String paymentMethod;

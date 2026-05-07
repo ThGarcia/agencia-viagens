@@ -79,7 +79,7 @@ export default function AppRoutes() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="admin/panel"
+                    <Route path="/admin/panel"
                         element={
                             <ProtectedRoute>
                                 <AdminPanel />

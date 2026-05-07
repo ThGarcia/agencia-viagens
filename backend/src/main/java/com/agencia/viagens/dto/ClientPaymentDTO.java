@@ -1,0 +1,23 @@
+package com.agencia.viagens.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClientPaymentDTO {
+
+    private BigDecimal paymentPrice;
+    private String paymentType;
+    private LocalDate paymentDay;
+    private BigDecimal paymentRemaining;
+    private UUID contractId;
+}

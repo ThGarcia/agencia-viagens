@@ -8,6 +8,14 @@ export interface Passenger {
   birthDate: string;
 }
 
+export interface ClientPayment {
+  id?: string;
+  paymentPrice: number;
+  paymentType: string;
+  paymentDay: string;
+  paymentRemaining: number;
+}
+
 export interface ContractRequest {
   clientName: string;
   clientCpf: string;
@@ -23,6 +31,7 @@ export interface ContractRequest {
   addressZip: string;
   travelId: string;
   passengers: Passenger[];
+  clientPayment: ClientPayment[];
 }
 
 export interface ContractResponse extends Omit<ContractRequest, 'travelId'> {
@@ -33,6 +42,7 @@ export interface ContractResponse extends Omit<ContractRequest, 'travelId'> {
   roomType: string;
   tokenAccess?: string;
   travel: TravelResponse;
+  clientPayment: ClientPayment[];
 }
 
 export interface PassengerListDTO {

@@ -107,6 +107,15 @@ public class ContractService {
                             pDto.setName(p.getName());
                             return pDto;
                         }).toList())
+                .clientPayments(c.getClientPayments().stream()
+                        .map(cp -> {
+                            ClientPaymentDTO cpDto = new ClientPaymentDTO();
+                            cpDto.setPaymentPrice(cp.getPaymentPrice());
+                            cpDto.setPaymentType(cp.getPaymentType());
+                            cpDto.setPaymentDay(cp.getPaymentDay());
+                            cpDto.setPaymentRemaining(cp.getPaymentRemaining());
+                            return cpDto;
+                        }).toList())
                 .build();
     }
 

@@ -107,7 +107,7 @@ export default function AdminContracts() {
 
             {Object.keys(grouped).map((travel) => (
                 <div key={travel} style={{ marginBottom: 30 }}>
-                    <h2 style={{ borderBottom: "2px solid #eee" }}>{travel}</h2>
+                    <h2>{travel}</h2>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "15px" }}>
                         {grouped[travel].map((c) => (
@@ -115,6 +115,30 @@ export default function AdminContracts() {
                                 <h3>{c.clientName}</h3>
                                 <p><strong>Status:</strong> {c.status}</p>
                                 <p><strong>Total:</strong> R$ {c.priceTotal?.toFixed(2)}</p>
+                                <p><strong>Pagamento:</strong> {c.paymentMethod}</p>
+
+                                {c.status === "APPROVED" && (
+                                    <table style={{ width: "100%" }}>
+                                        <thead>
+                                            <tr>
+                                                <th>Valor</th>
+                                                <th>Pagamento</th>
+                                                <th>Data</th>
+                                                <th>Restante</th>
+                                            </tr>
+                                        </thead>
+                                        {/*<tbody>
+                                            {c.clientPayment.map((payment, index) => (
+                                                <tr key={index}>
+                                                    <td>R$ {payment.paymentPrice?.toFixed(2)}</td>
+                                                    <td>{payment.paymentType}</td>
+                                                    <td>{payment.paymentDay}</td>
+                                                    <td>R$ {payment.paymentRemaining?.toFixed(2)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>*/}
+                                    </table>
+                                )}
 
                                 <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginTop: "10px" }}>
 

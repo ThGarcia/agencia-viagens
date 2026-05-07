@@ -42,4 +42,6 @@ public class ContractRequestDTO {
     private UUID travelId;
 
     private List<PassengerDTO> passengers;
+
+    private List<ClientPaymentDTO> clientPayments;
 }
