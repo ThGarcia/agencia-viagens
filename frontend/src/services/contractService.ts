@@ -62,3 +62,8 @@ export async function clientPayment(
   const response = await api.post(`${PATH}/${id}/payment`, data);
   return response.data;
 }
+
+export async function updateContract(id: string, data: any) {
+  const response = await api.put(`/contratos/${id}`, data);
+  return response.data;
+}

@@ -136,8 +136,9 @@
                     @ApiResponse(responseCode = "404", description = "Contrato não encontrado")
             })
             @GetMapping("/token/{token}")
-            public Contract findByToken(@PathVariable UUID token) {
-                return contractService.findByToken(token);
+            public ContractResponseDTO findByToken(@PathVariable UUID token) {
+                Contract contract = contractService.findByToken(token);
+                return contractService.getById(contract.getId());
             }
 
             @Operation(
@@ -182,5 +183,22 @@
                     @PathVariable UUID id,
                     @RequestBody ClientPaymentRequestDTO dto) {
                 return ResponseEntity.ok(contractService.addPayment(id, dto));
+            }
+
+            @Operation(
+                    summary = "Alteração de contrato",
+                    description = """
+                            Atualização ou mudança de contratos."""
+            )
+            @ApiResponses(value = {
+                    @ApiResponse(responseCode = "200", description = "Contrato atualizado"),
+                    @ApiResponse(responseCode = "404", description = "Falha ao atualizar contrato")
+            })
+            @PutMapping("/{id}")
+            public ResponseEntity<ContractResponseDTO> update(
+                    @PathVariable UUID id,
+                    @RequestBody ContractRequestDTO dto
+            ) {
+                return ResponseEntity.ok(contractService.update(id, dto));
             }
         }

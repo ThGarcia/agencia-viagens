@@ -27,7 +27,7 @@ export default function Home() {
 
       {travels.map((travel) => (
         <div key={travel.id} onClick={() => navigate(`/viagem/${travel.id}`)} style={{ border: "1px solid #ccc", margin: 10, padding: 10, cursor: "pointer" }}>
-          <img src={travel.imageUrl} alt={travel.title} style={{ width: "75%", height: "auto" }} />
+          <img src={travel.imageUrl} alt={travel.title} style={{ width: "25%", height: "auto" }} />
           <h2>🚌 {travel.title}</h2>
           <p>📝 {travel.description}</p>
           <p>📅 Ida: {travel.departureDate}</p>

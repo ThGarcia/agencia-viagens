@@ -237,6 +237,41 @@ public class ContractService {
         return getById(contractId);
     }
 
+    public ContractResponseDTO update(UUID id, ContractRequestDTO dto) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        Travel travel = travelRepository.findById(dto.getTravelId())
+                .orElseThrow(() -> new RuntimeException("Travel not found"));
+
+        contract.setClientName(dto.getClientName());
+        contract.setClientCpf(dto.getClientCpf());
+        contract.setClientRg(dto.getClientRg());
+        contract.setClientBirthDate(dto.getClientBirthDate());
+        contract.setClientPhone(dto.getClientPhone());
+
+        contract.setAddressStreet(dto.getAddressStreet());
+        contract.setAddressNumber(dto.getAddressNumber());
+        contract.setAddressComplement(dto.getAddressComplement());
+        contract.setAddressNeighborhood(dto.getAddressNeighborhood());
+        contract.setAddressCity(dto.getAddressCity());
+        contract.setAddressState(dto.getAddressState());
+        contract.setAddressZip(dto.getAddressZip());
+
+        contract.setTravel(travel);
+
+        int totalPeople = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
+        contract.setTotalPeople(totalPeople);
+
+        contract.setPriceTotal(
+                travel.getPriceBase().multiply(BigDecimal.valueOf(totalPeople))
+        );
+
+        contractRepository.save(contract);
+
+        return getById(id);
+    }
+
     private int calculateAgeFromStr(String birthDateStr, DateTimeFormatter formatter) {
         if (birthDateStr == null || birthDateStr.isBlank()) return 0;
         try {

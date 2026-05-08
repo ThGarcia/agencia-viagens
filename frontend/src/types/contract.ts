@@ -31,7 +31,6 @@ export interface ContractRequest {
   addressZip: string;
   travelId: string;
   passengers: Passenger[];
-  clientPayment: ClientPayment[];
 }
 
 export interface ContractResponse extends Omit<ContractRequest, 'travelId'> {
