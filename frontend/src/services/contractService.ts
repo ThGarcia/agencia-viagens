@@ -54,3 +54,11 @@ export async function markAsPaid(id: string) {
   const response = await api.patch(`${PATH}/${id}/pago`);
   return response.data;
 }
+
+export async function clientPayment(
+  id: string,
+  data: { paymentPrice: number; paymentType: string }
+) {
+  const response = await api.post(`${PATH}/${id}/payment`, data);
+  return response.data;
+}

@@ -203,6 +203,40 @@ public class ContractService {
         return list;
     }
 
+    public ContractResponseDTO addPayment(UUID contractId, ClientPaymentRequestDTO dto) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        if (!ContractStatus.APPROVED.equals(contract.getStatus()) &&
+                !ContractStatus.PAID.equals(contract.getStatus())) {
+            throw new RuntimeException("Contract not valid for payment");
+        }
+
+        BigDecimal totalPaid = contract.getClientPayments().stream()
+                .map(cp -> cp.getPaymentPrice())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal newTotalPaid = totalPaid.add(dto.getPaymentPrice());
+        BigDecimal remaining = contract.getPriceTotal().subtract(newTotalPaid);
+
+        ClientPayment payment = new ClientPayment();
+        payment.setPaymentPrice(dto.getPaymentPrice());
+        payment.setPaymentType(dto.getPaymentType());
+        payment.setPaymentDay(LocalDate.now());
+        payment.setPaymentRemaining(remaining);
+        payment.setContract(contract);
+
+        contract.getClientPayments().add(payment);
+
+        if (remaining.compareTo(BigDecimal.ZERO) <= 0) {
+            contract.setStatus(ContractStatus.PAID);
+        }
+
+        contractRepository.save(contract);
+
+        return getById(contractId);
+    }
+
     private int calculateAgeFromStr(String birthDateStr, DateTimeFormatter formatter) {
         if (birthDateStr == null || birthDateStr.isBlank()) return 0;
         try {

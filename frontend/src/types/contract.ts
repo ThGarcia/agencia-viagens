@@ -42,7 +42,7 @@ export interface ContractResponse extends Omit<ContractRequest, 'travelId'> {
   roomType: string;
   tokenAccess?: string;
   travel: TravelResponse;
-  clientPayment: ClientPayment[];
+  clientPayments: ClientPayment[];
 }
 
 export interface PassengerListDTO {

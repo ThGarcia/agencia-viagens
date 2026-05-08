@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getContractByToken } from "../services/contractService";
 import type { ContractResponse } from "../types/contract";
 import { isAuthenticated } from "../services/auth";
@@ -11,6 +11,7 @@ export default function ContractDetails() {
     const { token } = useParams();
     const [contract, setContract] = useState<ContractResponse | null>(null);
     const isAdmin = isAuthenticated();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!token) return;
@@ -28,6 +29,10 @@ export default function ContractDetails() {
             `Olá ${contract.clientName}!\n\nSeu contrato da viagem *${contract.travel.title}* está pronto!\n\nAcesse e confira os detalhes aqui:\n${link}`
         );
         window.open(`https://wa.me/55${phone}?text=${message}`, "_blank");
+    };
+
+    const handleBack = () => {
+        navigate("/admin/contratos");
     };
 
     if (!contract) return <Loader />;
@@ -54,6 +59,9 @@ export default function ContractDetails() {
                         <h4 style={{ margin: 0, color: "#007bff" }}>Painel Administrativo</h4>
                         <p style={{ margin: 0, fontSize: 14 }}>Status Atual: <strong>{contract.status}</strong></p>
                     </div>
+                    <button onClick={handleBack}>
+                        Voltar
+                    </button>
                     <button
                         onClick={handleWhatsApp}
                         style={{

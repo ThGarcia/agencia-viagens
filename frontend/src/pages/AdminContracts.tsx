@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getContracts, cancelContract, confirmContract, markAsPaid } from "../services/contractService";
+import { getContracts, cancelContract, confirmContract, markAsPaid, clientPayment } from "../services/contractService";
 import { getTravels } from "../services/travelService";
 import type { ContractResponse } from "../types/contract";
 import type { TravelResponse } from "../types/travel";
@@ -10,6 +10,10 @@ export default function AdminContracts() {
     const [statusFilter, setStatusFilter] = useState("PENDING");
     const [travelFilter, setTravelFilter] = useState("ALL");
     const [travels, setTravels] = useState<TravelResponse[]>([]);
+    const [paymentInputs, setPaymentInputs] = useState<Record<string, {
+    price: number;
+    type: string;
+    }>>({});
     const navigate = useNavigate();
 
     const loadData = () => {
@@ -25,7 +29,7 @@ export default function AdminContracts() {
         if (window.confirm("Tem certeza que deseja CANCELAR este contrato?")) {
             try {
                 await cancelContract(id);
-                loadData(); // Recarrega a lista para refletir a mudança
+                loadData();
                 alert("Contrato cancelado com sucesso.");
             } catch (error) {
                 console.error(error);
@@ -59,7 +63,7 @@ export default function AdminContracts() {
     };
 
     const filtered = contracts
-        .filter(c => c.status === statusFilter)
+        .filter(c => statusFilter === "" || c.status === statusFilter)
         .filter(c => travelFilter === "ALL" || c.travel.id === travelFilter);
 
     const grouped = filtered.reduce<Record<string, ContractResponse[]>>((acc, contract) => {
@@ -89,6 +93,9 @@ export default function AdminContracts() {
                 <button onClick={() => setStatusFilter("CONFIRMED")} style={btnStyle(statusFilter === "CONFIRMED", "#2ecc71")}>
                     🟢 Confirmados ({countByStatus("CONFIRMED")})
                 </button>
+                <button onClick={() => setStatusFilter("")} style={btnStyle(statusFilter === "", "#fefefe")}>
+                    ⚪ Contratos ({contracts.length})
+                </button>
                 <button onClick={() => setStatusFilter("CANCELLED")} style={btnStyle(statusFilter === "CANCELLED", "#7f8c8d")}>
                     ⚫ Cancelados ({countByStatus("CANCELLED")})
                 </button>
@@ -116,28 +123,102 @@ export default function AdminContracts() {
                                 <p><strong>Status:</strong> {c.status}</p>
                                 <p><strong>Total:</strong> R$ {c.priceTotal?.toFixed(2)}</p>
                                 <p><strong>Pagamento:</strong> {c.paymentMethod}</p>
-
+                              
                                 {c.status === "APPROVED" && (
+                                <div style= {{ display: "flex", flexDirection: "column" }}>
+                                    <div>
+                                        <label>
+                                        Valor: 
+                                    </label>
+                                    <input
+                                        type="number"
+                                        onChange={(e) =>
+                                        setPaymentInputs(prev => ({
+                                            ...prev,
+                                            [c.id]: {
+                                            price: Number(e.target.value),
+                                            type: prev[c.id]?.type || ""
+                                            }
+                                        }))
+                                        }
+                                        />
+                                    <label>
+                                        Pagamento:
+                                    </label>
+                                    <input 
+                                        type="text"
+                                        onChange={(e) =>
+                                        setPaymentInputs(prev => ({
+                                            ...prev,
+                                            [c.id]: {
+                                            price: prev[c.id]?.price || 0,
+                                            type: e.target.value
+                                            }
+                                        }))
+                                        }
+                                    />
+                                    <button
+                                        onClick={async () => {
+                                            const data = paymentInputs[c.id];
+
+                                            console.log("CLICK", c.id, data);
+
+                                            if (!data || data.price === undefined || !data.type) {
+                                            alert("Preencha valor e forma de pagamento");
+                                            return;
+                                            }
+
+                                            try {
+                                            const payload = {
+                                                paymentPrice: data.price,
+                                                paymentType: data.type
+                                            };
+
+                                            console.log("ENVIANDO:", payload);
+
+                                            await clientPayment(c.id, payload);
+
+                                            alert("Pagamento registrado!");
+
+                                            setPaymentInputs(prev => ({
+                                                ...prev,
+                                                [c.id]: { price: 0, type: "" }
+                                            }));
+
+                                            loadData();
+                                            } catch (e: any) {
+                                            console.error("ERRO:", e);
+                                            alert(e?.response?.data?.message || "Erro ao registrar pagamento");
+                                            }
+                                        }}
+                                        >
+                                        ✅
+                                    </button>
+                                    </div>
+                                
                                     <table style={{ width: "100%" }}>
                                         <thead>
                                             <tr>
-                                                <th>Valor</th>
-                                                <th>Pagamento</th>
-                                                <th>Data</th>
-                                                <th>Restante</th>
+                                                <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Valor</th>
+                                                <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Pagamento</th>
+                                                <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Data</th>
+                                                <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Restante</th>
                                             </tr>
                                         </thead>
-                                        {/*<tbody>
-                                            {c.clientPayment.map((payment, index) => (
+                                        <tbody>
+                                            {c.clientPayments?.map((payment, index) => (
                                                 <tr key={index}>
-                                                    <td>R$ {payment.paymentPrice?.toFixed(2)}</td>
-                                                    <td>{payment.paymentType}</td>
-                                                    <td>{payment.paymentDay}</td>
-                                                    <td>R$ {payment.paymentRemaining?.toFixed(2)}</td>
+                                                <td style={{ border: "1px solid #FFF", textAlign: "center" }}>R$ {payment.paymentPrice?.toFixed(2)}</td>
+                                                <td style={{ border: "1px solid #FFF", textAlign: "center" }}>{payment.paymentType}</td>
+                                                <td style={{ border: "1px solid #FFF", textAlign: "center" }}>{payment.paymentDay}</td>
+                                                <td style={{ border: "1px solid #FFF", textAlign: "center" }}>
+                                                    R$ {payment.paymentRemaining?.toFixed(2)}
+                                                </td>
                                                 </tr>
                                             ))}
-                                        </tbody>*/}
+                                            </tbody>
                                     </table>
+                                    </div>
                                 )}
 
                                 <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginTop: "10px" }}>
