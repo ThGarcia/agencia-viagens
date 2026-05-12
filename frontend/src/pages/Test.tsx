@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getContractByToken, updateContract } from "../services/contractService";
+import { useNavigate, useParams } from "react-router-dom";
+import { getContractById, updateContract } from "../services/contractService";
 import type { ContractResponse } from "../types/contract";
+import { getTravels } from "../services/travelService";
+import type { TravelResponse } from "../types/travel";
 import "./Test.css";
 
 import Input from "../components/input/Input";
+import SearchInput from "../components/input/InputSearch";
 
 export default function Test() {
-    const { token } = useParams();
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [contract, setContract] = useState<ContractResponse | null>(null);
+    const [travels, setTravels] = useState<TravelResponse[]>([]);
 
     type FormType = {
         clientName: string;
@@ -41,10 +46,14 @@ export default function Test() {
     });
 
     useEffect(() => {
-        if (!token) return;
+        if (!id) {
+            console.log("ID não encontrado");
+            return;
+        }
 
-        getContractByToken(token)
+        getContractById(id)
             .then((data) => {
+                //console.log("CONTRACT BACKEND 👉", data);
                 setContract(data);
 
                 setForm({
@@ -63,16 +72,61 @@ export default function Test() {
                 });
             })
             .catch(() => alert("Contrato não encontrado"));
-    }, [token]);
+    }, [id]);
+
+    useEffect(() => {
+        getTravels().then(setTravels);
+    }, []);
 
     return (
         <div style={{ padding: 20 }}>
             <h1 style={{ margin: 20 }}>Editar Contrato</h1>
-            <Input label='Contrato' value={token} />
+            <Input label='Contrato' value={contract?.id} />
             <Input label='Viagem' value={contract?.travel.title} />
             <Input label='Data' value={contract?.travel.departureDate} />
-            <Input label='Valor' type='number' value={contract?.priceTotal} />
+            <Input
+                label='Valor'
+                type='number'
+                value={contract?.priceTotal}
+                onChange={(e) => {
+                    const value = Number(e.target.value);
+
+                    setContract(prev => {
+                        if (!prev) return prev;
+
+                        return {
+                            ...prev,
+                            priceTotal: value
+                        };
+                    });
+                }}
+            />
             <Input label='Pagamento' value={contract?.paymentMethod} />
+            <SearchInput
+                label="Buscar viagem"
+                defaultValue={contract?.travel?.title}
+                options={travels.map(t => ({
+                    id: t.id,
+                    title: t.title
+                }))}
+                onSelect={(selected) => {
+                    const fullTravel = travels.find(t => t.id === selected.id);
+
+                    if (!fullTravel) return;
+
+                    setContract(prev => {
+                        if (!prev) return prev;
+
+                        const totalPeople = (prev.passengers?.length || 0) + 1;
+
+                        return {
+                            ...prev,
+                            travel: fullTravel, // ✅ mantém estrutura correta
+                            priceTotal: fullTravel.priceBase * totalPeople
+                        };
+                    });
+                }}
+            />
 
             <h2 style={{ margin: 20 }}>Cliente</h2>
             <Input
@@ -162,20 +216,26 @@ export default function Test() {
                 }
             />
 
-            {/*<h2 style={{ margin: 20 }}>Acompanhante</h2>
-            <Input label='Nome' value={data.companionName} />
-            <Input label='CPF' value={data.companionCpf} />
-            <Input label='RG' value={data.companionRg} />
-            <Input label='Data de Nascimento' value={data.companionBirthDate} /> */}
-
             <button
                 onClick={async () => {
                     if (!contract?.id) return;
 
                     try {
-                        await updateContract(contract.id, form);
+                        const payload = {
+                            ...form,
+                            travelId: contract.travel.id,
+                            passengers: contract.passengers || [],
+                            priceTotal: contract.priceTotal
+                        };
+
+                        //console.log("ENVIANDO UPDATE 👉", payload);
+
+                        await updateContract(contract.id, payload);
+
                         alert("Contrato atualizado!");
-                    } catch {
+                        navigate(-1);
+                    } catch (e) {
+                        console.error(e);
                         alert("Erro ao atualizar");
                     }
                 }}
@@ -183,6 +243,6 @@ export default function Test() {
                 💾 Salvar
             </button>
 
-        </div>
+        </div >
     );
 }

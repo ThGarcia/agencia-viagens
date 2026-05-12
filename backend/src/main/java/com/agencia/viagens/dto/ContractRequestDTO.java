@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +38,9 @@ public class ContractRequestDTO {
     private String addressState;
     @Schema(example = "XXXXX-XXX")
     private String addressZip;
+
+    @Schema(example = "R$ 0.000,00")
+    private BigDecimal priceTotal;
 
     @Schema(example = "b3f9c2b2-1234-4a12-9c2e-123456789abc")
     private UUID travelId;

@@ -31,7 +31,7 @@ export default function AppRoutes() {
                     <Route path="/contrato/:token" element={<ContractDetails />} />
                     <Route path="/obrigado" element={<WaitResponse />} />
                     <Route path="/admin" element={<AdminLogin />} />
-                    <Route path="/test/:token" element={<Test />} />
+                    <Route path="/test/:id" element={<Test />} />
                     <Route path="/admin/contratos/:id"
                         element={
                             <ProtectedRoute>

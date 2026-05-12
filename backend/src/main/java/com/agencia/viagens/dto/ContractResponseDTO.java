@@ -17,6 +17,16 @@ public class ContractResponseDTO {
     private UUID tokenAccess;
     private String clientName;
     private String clientPhone;
+    private String clientRg;
+    private String clientCpf;
+    private String clientBirthDate;
+    private String addressStreet;
+    private String addressNumber;
+    private String addressComplement;
+    private String addressNeighborhood;
+    private String addressCity;
+    private String addressState;
+    private String addressZip;
     private BigDecimal priceTotal;
     private String paymentMethod;
     private ContractStatus status;

@@ -15,6 +15,7 @@ export default function Input({ label, value, type = "text", onChange }: InputPr
         placeholder=" "
         value={value || ""}
         onChange={onChange}
+        readOnly={!onChange}
         required
       />
       <label>{label}</label>

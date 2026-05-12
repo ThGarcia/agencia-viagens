@@ -3,6 +3,10 @@
   margin-top: 10px;
 }
 
+#search-input {
+  position: relative;
+}
+
 .input-group input {
   width: 100%;
   padding: 10px 0px 2px 10px;
@@ -24,8 +28,41 @@
   padding: 0 5px;
 }
 
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
+.search-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.search-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #57e50b;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10
+}
+
+.search-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-item:hover {
+  background: #514b4b;
+}
+
+.search-nothing {
+  padding: 10px;
+}
+
+.input-group input:focus+label,
+.input-group input:not(:placeholder-shown)+label {
   top: -8px;
   font-size: 12px;
   color: #fff;

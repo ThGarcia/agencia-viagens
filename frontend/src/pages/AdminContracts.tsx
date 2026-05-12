@@ -236,13 +236,7 @@ export default function AdminContracts() {
                                     )}
 
                                     {c.tokenAccess && (
-                                        <button
-                                            onClick={() => {
-                                                console.log("CONTRATO COMPLETO:", c);
-                                                navigate(`/test/${c.tokenAccess}`);
-                                            }}
-                                            style={actionBtn("#9b59b6")}
-                                        >
+                                        <button onClick={() => {navigate(`/test/${c.id}`)}} style={actionBtn("#9b59b6")}>
                                             ✏️ Editar Contrato
                                         </button>
                                     )}

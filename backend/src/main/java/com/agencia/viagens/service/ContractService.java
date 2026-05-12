@@ -97,6 +97,16 @@ public class ContractService {
                 .tokenAccess(c.getTokenAccess())
                 .clientName(c.getClientName())
                 .clientPhone(c.getClientPhone())
+                .clientRg(c.getClientRg())
+                .clientCpf(c.getClientCpf())
+                .clientBirthDate(c.getClientBirthDate())
+                .addressStreet(c.getAddressStreet())
+                .addressNumber(c.getAddressNumber())
+                .addressComplement(c.getAddressComplement())
+                .addressNeighborhood(c.getAddressNeighborhood())
+                .addressCity(c.getAddressCity())
+                .addressState(c.getAddressState())
+                .addressZip(c.getAddressZip())
                 .priceTotal(c.getPriceTotal())
                 .paymentMethod(c.getPaymentMethod())
                 .status(c.getStatus())
@@ -263,9 +273,13 @@ public class ContractService {
         int totalPeople = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
         contract.setTotalPeople(totalPeople);
 
-        contract.setPriceTotal(
-                travel.getPriceBase().multiply(BigDecimal.valueOf(totalPeople))
-        );
+        if (dto.getPriceTotal() != null && dto.getPriceTotal().compareTo(BigDecimal.ZERO) > 0) {
+            contract.setPriceTotal(dto.getPriceTotal());
+        } else {
+            contract.setPriceTotal(
+                    travel.getPriceBase().multiply(BigDecimal.valueOf(totalPeople))
+            );
+        }
 
         contractRepository.save(contract);
 
