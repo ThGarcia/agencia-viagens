@@ -41,6 +41,10 @@ public class ContractRequestDTO {
 
     @Schema(example = "R$ 0.000,00")
     private BigDecimal priceTotal;
+    @Schema(example = "Pix, Cartão, Dinheiro")
+    private String paymentMethod;
+    @Schema(example = "Single, Double, Couple")
+    private String roomType;
 
     @Schema(example = "b3f9c2b2-1234-4a12-9c2e-123456789abc")
     private UUID travelId;

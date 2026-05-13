@@ -109,6 +109,7 @@ public class ContractService {
                 .addressZip(c.getAddressZip())
                 .priceTotal(c.getPriceTotal())
                 .paymentMethod(c.getPaymentMethod())
+                .roomType(c.getRoomType())
                 .status(c.getStatus())
                 .travel(travelService.findById(c.getTravel().getId()))
                 .passengers(c.getPassengers().stream()
@@ -268,6 +269,8 @@ public class ContractService {
         contract.setAddressState(dto.getAddressState());
         contract.setAddressZip(dto.getAddressZip());
 
+        contract.setRoomType(dto.getRoomType());
+        contract.setPaymentMethod(dto.getPaymentMethod());
         contract.setTravel(travel);
 
         int totalPeople = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;

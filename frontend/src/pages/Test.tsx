@@ -47,13 +47,13 @@ export default function Test() {
 
     useEffect(() => {
         if (!id) {
-            console.log("ID não encontrado");
+            //console.log("ID não encontrado");
             return;
         }
 
         getContractById(id)
             .then((data) => {
-                //console.log("CONTRACT BACKEND 👉", data);
+                console.log("CONTRACT BACKEND 👉", data);
                 setContract(data);
 
                 setForm({
@@ -101,7 +101,62 @@ export default function Test() {
                     });
                 }}
             />
-            <Input label='Pagamento' value={contract?.paymentMethod} />
+            <Input
+                label='Pagamento'
+                value={contract?.paymentMethod}
+                onChange={(e) => {
+                    const value = String(e.target.value);
+
+                    setContract(prev => {
+                        if (!prev) return prev;
+
+                        return {
+                            ...prev,
+                            paymentMethod: value
+                        };
+                    });
+                }}
+            />
+            {/*<Input
+                label='Quarto'
+                value={contract?.roomType}
+                onChange={(e) => {
+                    const value = String(e.target.value);
+
+                    setContract(prev => {
+                        if (!prev) return prev;
+
+                        return {
+                            ...prev,
+                            roomType: value
+                        };
+                    });
+                }}
+            />*/}
+            <div className="input-group">
+                <select
+                    value={contract?.roomType || ""}
+                    onChange={(e) => {
+                        const value = e.target.value;
+
+                        setContract(prev => {
+                            if (!prev) return prev;
+
+                            return {
+                                ...prev,
+                                roomType: value
+                            };
+                        });
+                    }}
+                    required
+                >
+                    <option value="" disabled hidden>Selecione um quarto</option>
+                    <option value="SINGLE">Solteiro</option>
+                    <option value="DOUBLE">Duplo</option>
+                    <option value="COUPLE">Casal</option>
+                </select>
+                <label>Quarto</label>
+            </div>
             <SearchInput
                 label="Buscar viagem"
                 defaultValue={contract?.travel?.title}
@@ -121,7 +176,7 @@ export default function Test() {
 
                         return {
                             ...prev,
-                            travel: fullTravel, // ✅ mantém estrutura correta
+                            travel: fullTravel,
                             priceTotal: fullTravel.priceBase * totalPeople
                         };
                     });
@@ -225,10 +280,12 @@ export default function Test() {
                             ...form,
                             travelId: contract.travel.id,
                             passengers: contract.passengers || [],
-                            priceTotal: contract.priceTotal
+                            priceTotal: contract.priceTotal,
+                            paymentMethod: contract.paymentMethod,
+                            roomType: contract.roomType
                         };
 
-                        //console.log("ENVIANDO UPDATE 👉", payload);
+                        console.log("ENVIANDO UPDATE 👉", payload);
 
                         await updateContract(contract.id, payload);
 

@@ -29,6 +29,7 @@ public class ContractResponseDTO {
     private String addressZip;
     private BigDecimal priceTotal;
     private String paymentMethod;
+    private String roomType;
     private ContractStatus status;
     private TravelResponseDTO travel;
     private List<PassengerDTO> passengers;
