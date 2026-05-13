@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ContractService {
@@ -68,7 +69,7 @@ public class ContractService {
                 passenger.setRoomType(p.getRoomType());
                 passenger.setContract(contract);
                 return passenger;
-            }).toList();
+            }).collect(Collectors.toList());
 
             contract.setPassengers(passengers);
             contract.setTotalPeople(passengers.size() + 1);
@@ -116,6 +117,9 @@ public class ContractService {
                         .map(p -> {
                             PassengerDTO pDto = new PassengerDTO();
                             pDto.setName(p.getName());
+                            pDto.setCpf(p.getCpf());
+                            pDto.setRg(p.getRg());
+                            pDto.setBirthDate(p.getBirthDate());
                             return pDto;
                         }).toList())
                 .clientPayments(c.getClientPayments().stream()
@@ -273,7 +277,7 @@ public class ContractService {
         contract.setPaymentMethod(dto.getPaymentMethod());
         contract.setTravel(travel);
 
-        int totalPeople = (contract.getPassengers() != null ? contract.getPassengers().size() : 0) + 1;
+        int totalPeople = (dto.getPassengers() != null ? dto.getPassengers().size() : 0) + 1;
         contract.setTotalPeople(totalPeople);
 
         if (dto.getPriceTotal() != null && dto.getPriceTotal().compareTo(BigDecimal.ZERO) > 0) {
@@ -282,6 +286,28 @@ public class ContractService {
             contract.setPriceTotal(
                     travel.getPriceBase().multiply(BigDecimal.valueOf(totalPeople))
             );
+        }
+
+        List<Passenger> passengers = contract.getPassengers();
+
+        if (passengers == null) {
+            passengers = new ArrayList<>();
+            contract.setPassengers(passengers);
+        } else {
+            passengers.clear();
+        }
+
+        if (dto.getPassengers() != null) {
+            for (PassengerDTO p : dto.getPassengers()) {
+                Passenger passenger = new Passenger();
+                passenger.setName(p.getName());
+                passenger.setCpf(p.getCpf());
+                passenger.setRg(p.getRg());
+                passenger.setBirthDate(p.getBirthDate());
+                passenger.setContract(contract);
+
+                passengers.add(passenger);
+            }
         }
 
         contractRepository.save(contract);

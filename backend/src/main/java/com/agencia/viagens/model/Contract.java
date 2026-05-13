@@ -39,7 +39,7 @@ public class Contract {
     private String addressState;
     private String addressZip;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Passenger> passengers;
 

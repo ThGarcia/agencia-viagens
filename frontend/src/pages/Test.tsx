@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getContractById, updateContract } from "../services/contractService";
-import type { ContractResponse } from "../types/contract";
+import type { ContractResponse, Passenger } from "../types/contract";
 import { getTravels } from "../services/travelService";
 import type { TravelResponse } from "../types/travel";
+import { roomOptions } from "../types/select";
 import "./Test.css";
 
 import Input from "../components/input/Input";
 import SearchInput from "../components/input/InputSearch";
+import SelectInput from "../components/input/InputSelect";
 
 export default function Test() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [contract, setContract] = useState<ContractResponse | null>(null);
     const [travels, setTravels] = useState<TravelResponse[]>([]);
+    const [passengers, setPassengers] = useState<Passenger[]>([]);
 
     type FormType = {
         clientName: string;
@@ -56,6 +59,8 @@ export default function Test() {
                 console.log("CONTRACT BACKEND 👉", data);
                 setContract(data);
 
+                setPassengers(data.passengers || []);
+
                 setForm({
                     clientName: data.clientName || "",
                     clientCpf: data.clientCpf || "",
@@ -77,6 +82,57 @@ export default function Test() {
     useEffect(() => {
         getTravels().then(setTravels);
     }, []);
+
+    const recalcPrice = (travelPrice: number, totalPeople: number) => {
+        return travelPrice * totalPeople;
+    };
+
+    const addPassenger = () => {
+        setPassengers(prev => {
+            const updated = [
+                ...prev,
+                { name: "", cpf: "", rg: "", birthDate: "" }
+            ];
+
+            setContract(c => {
+                if (!c) return c;
+
+                const totalPeople = updated.length + 1;
+
+                return {
+                    ...c,
+                    priceTotal: recalcPrice(c.travel.priceBase, totalPeople)
+                };
+            });
+
+            return updated;
+        });
+    };
+
+    const removePassenger = (index: number) => {
+        setPassengers(prev => {
+            const updated = prev.filter((_, i) => i !== index);
+
+            setContract(c => {
+                if (!c) return c;
+
+                const totalPeople = updated.length + 1;
+
+                return {
+                    ...c,
+                    priceTotal: recalcPrice(c.travel.priceBase, totalPeople)
+                };
+            });
+
+            return updated;
+        });
+    };
+
+    const updatePassenger = (index: number, field: keyof Passenger, value: string) => {
+        const updated = [...passengers];
+        updated[index][field] = value;
+        setPassengers(updated);
+    };
 
     return (
         <div style={{ padding: 20 }}>
@@ -117,12 +173,11 @@ export default function Test() {
                     });
                 }}
             />
-            {/*<Input
-                label='Quarto'
-                value={contract?.roomType}
-                onChange={(e) => {
-                    const value = String(e.target.value);
-
+            <SelectInput
+                label="Quarto"
+                value={contract?.roomType || ""}
+                options={roomOptions}
+                onChange={(value) => {
                     setContract(prev => {
                         if (!prev) return prev;
 
@@ -132,31 +187,7 @@ export default function Test() {
                         };
                     });
                 }}
-            />*/}
-            <div className="input-group">
-                <select
-                    value={contract?.roomType || ""}
-                    onChange={(e) => {
-                        const value = e.target.value;
-
-                        setContract(prev => {
-                            if (!prev) return prev;
-
-                            return {
-                                ...prev,
-                                roomType: value
-                            };
-                        });
-                    }}
-                    required
-                >
-                    <option value="" disabled hidden>Selecione um quarto</option>
-                    <option value="SINGLE">Solteiro</option>
-                    <option value="DOUBLE">Duplo</option>
-                    <option value="COUPLE">Casal</option>
-                </select>
-                <label>Quarto</label>
-            </div>
+            />
             <SearchInput
                 label="Buscar viagem"
                 defaultValue={contract?.travel?.title}
@@ -271,6 +302,47 @@ export default function Test() {
                 }
             />
 
+            <h2 style={{ margin: 20 }}>Passageiros</h2>
+
+            {passengers.map((p, i) => (
+                <div key={i} style={{ marginBottom: 10 }}>
+                    <h4>
+                        {passengers.length === 1
+                            ? "Acompanhante"
+                            : `Acompanhante ${i + 1}`}
+                    </h4>
+
+                    <Input
+                        label="Nome"
+                        value={p.name}
+                        onChange={(e) => updatePassenger(i, "name", e.target.value)}
+                    />
+                    <Input
+                        label="CPF"
+                        value={p.cpf}
+                        onChange={(e) => updatePassenger(i, "cpf", e.target.value)}
+                    />
+                    <Input
+                        label="RG"
+                        value={p.rg}
+                        onChange={(e) => updatePassenger(i, "rg", e.target.value)}
+                    />
+                    <Input
+                        label="Data de Nascimento"
+                        value={p.birthDate}
+                        onChange={(e) => updatePassenger(i, "birthDate", e.target.value)}
+                    />
+
+                    <button onClick={() => removePassenger(i)}>
+                        ❌ Remover
+                    </button>
+                </div>
+            ))}
+
+            <button onClick={addPassenger}>
+                + Adicionar passageiro
+            </button>
+
             <button
                 onClick={async () => {
                     if (!contract?.id) return;
@@ -279,7 +351,7 @@ export default function Test() {
                         const payload = {
                             ...form,
                             travelId: contract.travel.id,
-                            passengers: contract.passengers || [],
+                            passengers: passengers,
                             priceTotal: contract.priceTotal,
                             paymentMethod: contract.paymentMethod,
                             roomType: contract.roomType

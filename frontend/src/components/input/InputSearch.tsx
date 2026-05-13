@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Input.css";
 
 type Option = {
@@ -17,16 +17,37 @@ export default function SearchInput({ label, options, defaultValue, onSelect }:
     SearchProps) {
     const [search, setSearch] = useState(defaultValue || "");
     const [showList, setShowList] = useState(false);
-    const filtered = options.filter(opt =>
-        opt.title.toLowerCase().includes(search.toLowerCase())
-    );
+    const containerRef = useRef<HTMLDivElement>(null);
+    const safeOptions = options || [];
+    const filtered = search
+        ? safeOptions.filter(opt =>
+            opt.title.toLowerCase().includes(search.toLowerCase())
+        )
+        : safeOptions;
 
     useEffect(() => {
         setSearch(defaultValue || "");
     }, [defaultValue]);
 
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node)
+            ) {
+                setShowList(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="input-group" id="search-input">
+        <div className="input-group" id="search-input" ref={containerRef}>
 
             <input
                 type="text"
@@ -36,6 +57,7 @@ export default function SearchInput({ label, options, defaultValue, onSelect }:
                     setSearch(e.target.value);
                     setShowList(true);
                 }}
+                onFocus={() => setShowList(true)}
             />
 
             <label>{label}</label>
@@ -51,7 +73,7 @@ export default function SearchInput({ label, options, defaultValue, onSelect }:
                 </span>
             )}
 
-            {showList && search && (
+            {showList && (
                 <div className="search-list">
                     {filtered.length > 0 ? (
                         filtered.map(opt => (
