@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getActiveTravels } from "../services/travelService";
 import type { TravelResponse } from "../types/travel";
+import "../styles/Pages.css";
 
 import Loader from "../components/Loader";
+import CardTravel from "../components/card/CardTravel";
 
 export default function Home() {
   const [travels, setTravels] = useState<TravelResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     getActiveTravels()
@@ -20,24 +20,15 @@ export default function Home() {
   if (loading) return <Loader />
 
   return (
-    <div>
+    <div className="home">
       <h1>Viagens disponíveis</h1>
 
       {travels.length === 0 && <p>Nenhuma viagem disponível no momento.</p>}
-
-      {travels.map((travel) => (
-        <div key={travel.id} onClick={() => navigate(`/viagem/${travel.id}`)} style={{ border: "1px solid #ccc", margin: 10, padding: 10, cursor: "pointer" }}>
-          <img src={travel.imageUrl} alt={travel.title} style={{ width: "25%", height: "auto" }} />
-          <h2>🚌 {travel.title}</h2>
-          <p>📝 {travel.description}</p>
-          <p>📅 Ida: {travel.departureDate}</p>
-          <p>📅 Volta: {travel.returnDate}</p>
-          <p>💰 {travel.priceBase.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}</p>
-        </div>
-      ))}
+      <div className="travels-list">
+        {travels.map((travel) => (
+          <CardTravel key={travel.id} travel={travel} />
+        ))}
+      </div>
     </div>
   );
 }

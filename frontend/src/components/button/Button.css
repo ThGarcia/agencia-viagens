@@ -1,0 +1,11 @@
+.button-group button {
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: #C6F000;
+    font-weight: bolder;
+}
+
+.button-group button:hover {
+    background-color: #FF9F1C;
+    color: #FFF;
+}

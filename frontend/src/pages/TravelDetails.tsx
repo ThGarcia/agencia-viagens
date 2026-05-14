@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getTravelById } from "../services/travelService";
 import type { TravelResponse } from "../types/travel";
 
 import Loader from "../components/Loader";
+import CardDetails from "../components/card/CardDetails";
 
 export default function TravelDetails() {
     const { id } = useParams();
-    const navigate = useNavigate();
 
     const [travel, setTravel] = useState<TravelResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -25,22 +25,8 @@ export default function TravelDetails() {
     if (!travel) return <p>Viagem não encontrada</p>
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>🚌 {travel.title}</h1>
-            <img src={travel.imageUrl} alt={travel.title} style={{ width: "75%", height: "auto", marginBottom: 20 }} />
-            <h3>📝 {travel.subtitle}</h3>
-            <p>💬 {travel.description}</p>
-            <p>💰 {travel.priceBase.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-            })}</p>
-            <p>📅 Ida: {travel.departureDate}</p>
-            <p>📅 Volta: {travel.returnDate}</p>
-            <button
-                onClick={() => navigate(`/contrato?travelId=${travel.id}`)}
-                style={{ marginTop: 20, padding: "10px 20px", cursor: "pointer" }}>
-                Contratar
-            </button>
+        <div>
+            <CardDetails travel={travel} />
         </div>
     );
 }
