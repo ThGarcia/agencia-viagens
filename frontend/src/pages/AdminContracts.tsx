@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getContracts, cancelContract, confirmContract, markAsPaid, clientPayment } from "../services/contractService";
+import { getContracts, cancelContract, confirmContract, markAsPaid } from "../services/contractService";
 import { getTravels } from "../services/travelService";
 import type { ContractResponse } from "../types/contract";
 import type { TravelResponse } from "../types/travel";
+import PaymentTable from "../components/table/PaymentTable";
 
 export default function AdminContracts() {
     const [contracts, setContracts] = useState<ContractResponse[]>([]);
     const [statusFilter, setStatusFilter] = useState("PENDING");
     const [travelFilter, setTravelFilter] = useState("ALL");
     const [travels, setTravels] = useState<TravelResponse[]>([]);
-    const [paymentInputs, setPaymentInputs] = useState<Record<string, {
-        price: number;
-        type: string;
-    }>>({});
     const navigate = useNavigate();
 
     const loadData = () => {
@@ -124,101 +121,8 @@ export default function AdminContracts() {
                                 <p><strong>Total:</strong> R$ {c.priceTotal?.toFixed(2)}</p>
                                 <p><strong>Pagamento:</strong> {c.paymentMethod}</p>
 
-                                {c.status === "APPROVED" && (
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <div>
-                                            <label>
-                                                Valor:
-                                            </label>
-                                            <input
-                                                type="number"
-                                                onChange={(e) =>
-                                                    setPaymentInputs(prev => ({
-                                                        ...prev,
-                                                        [c.id]: {
-                                                            price: Number(e.target.value),
-                                                            type: prev[c.id]?.type || ""
-                                                        }
-                                                    }))
-                                                }
-                                            />
-                                            <label>
-                                                Pagamento:
-                                            </label>
-                                            <input
-                                                type="text"
-                                                onChange={(e) =>
-                                                    setPaymentInputs(prev => ({
-                                                        ...prev,
-                                                        [c.id]: {
-                                                            price: prev[c.id]?.price || 0,
-                                                            type: e.target.value
-                                                        }
-                                                    }))
-                                                }
-                                            />
-                                            <button
-                                                onClick={async () => {
-                                                    const data = paymentInputs[c.id];
-
-                                                    console.log("CLICK", c.id, data);
-
-                                                    if (!data || data.price === undefined || !data.type) {
-                                                        alert("Preencha valor e forma de pagamento");
-                                                        return;
-                                                    }
-
-                                                    try {
-                                                        const payload = {
-                                                            paymentPrice: data.price,
-                                                            paymentType: data.type
-                                                        };
-
-                                                        console.log("ENVIANDO:", payload);
-
-                                                        await clientPayment(c.id, payload);
-
-                                                        alert("Pagamento registrado!");
-
-                                                        setPaymentInputs(prev => ({
-                                                            ...prev,
-                                                            [c.id]: { price: 0, type: "" }
-                                                        }));
-
-                                                        loadData();
-                                                    } catch (e: any) {
-                                                        console.error("ERRO:", e);
-                                                        alert(e?.response?.data?.message || "Erro ao registrar pagamento");
-                                                    }
-                                                }}
-                                            >
-                                                ✅
-                                            </button>
-                                        </div>
-
-                                        <table style={{ width: "100%" }}>
-                                            <thead>
-                                                <tr>
-                                                    <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Valor</th>
-                                                    <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Pagamento</th>
-                                                    <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Data</th>
-                                                    <th style={{ border: "1px solid #FFF", textAlign: "center" }}>Restante</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {c.clientPayments?.map((payment, index) => (
-                                                    <tr key={index}>
-                                                        <td style={{ border: "1px solid #FFF", textAlign: "center" }}>R$ {payment.paymentPrice?.toFixed(2)}</td>
-                                                        <td style={{ border: "1px solid #FFF", textAlign: "center" }}>{payment.paymentType}</td>
-                                                        <td style={{ border: "1px solid #FFF", textAlign: "center" }}>{payment.paymentDay}</td>
-                                                        <td style={{ border: "1px solid #FFF", textAlign: "center" }}>
-                                                            R$ {payment.paymentRemaining?.toFixed(2)}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                {(c.status === "APPROVED" || c.status === "PAID") && (
+                                    <PaymentTable contract={c} reload={loadData} />
                                 )}
 
                                 <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginTop: "10px" }}>
@@ -236,7 +140,7 @@ export default function AdminContracts() {
                                     )}
 
                                     {c.tokenAccess && (
-                                        <button onClick={() => {navigate(`/test/${c.id}`)}} style={actionBtn("#9b59b6")}>
+                                        <button onClick={() => { navigate(`/test/${c.id}`) }} style={actionBtn("#9b59b6")}>
                                             ✏️ Editar Contrato
                                         </button>
                                     )}

@@ -1,0 +1,35 @@
+.table-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.table-payment {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    gap: 10px;
+}
+
+.table-inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-button {
+    width: 100%;
+    display: flex;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.table-data {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-data th, 
+.table-data td {
+    border: 1px solid #FFF;
+    text-align: center;
+}

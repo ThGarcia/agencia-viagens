@@ -25,7 +25,7 @@
   color: #aaa;
   transition: 0.2s ease;
   pointer-events: none;
-  background: #000000;
+  background: transparent;
   padding: 0 5px;
 }
 

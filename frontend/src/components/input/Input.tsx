@@ -2,7 +2,7 @@ import "./Input.css";
 
 type InputProps = {
   label: string;
-  value?: string | number;
+  value?: string | number | null;
   type?: string; 
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
@@ -13,7 +13,7 @@ export default function Input({ label, value, type = "text", onChange }: InputPr
       <input
         type={type}
         placeholder=" "
-        value={value || ""}
+        value={value ?? ""}
         onChange={onChange}
         readOnly={!onChange}
         required
