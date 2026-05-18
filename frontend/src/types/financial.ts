@@ -17,7 +17,7 @@ export interface FinancialReport {
     totalReceived: number;   
     totalRemaining: number;   
     totalCosts: number;     
-    netProfit: number;       
-    confirmedPassengers: number;
+    projectedProfit: number;       
+    totalPassengers: number;
     costs: TravelCost[];
 }

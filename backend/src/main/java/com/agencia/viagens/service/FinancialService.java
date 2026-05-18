@@ -25,7 +25,7 @@ public class FinancialService {
         private final ContractRepository contractRepository;
         private final TravelRepository travelRepository;
 
-        @Transactional
+    @Transactional
         public Payment addPayment(UUID contractId, BigDecimal amount, String method) {
                 Contract contract = contractRepository.findById(contractId)
                                 .orElseThrow(() -> new RuntimeException("Contrato não encontrado"));
@@ -39,9 +39,8 @@ public class FinancialService {
                 Payment saved = paymentRepository.save(payment);
 
                 BigDecimal totalPaid = contract.getPayments().stream()
-                                .map(Payment::getAmount)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                                .add(amount);
+                    .map(Payment::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 if (totalPaid.compareTo(contract.getPriceTotal()) >= 0) {
                         contract.setStatus(com.agencia.viagens.model.ContractStatus.PAID);
@@ -65,38 +64,62 @@ public class FinancialService {
                                 .filter(java.util.Objects::nonNull)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                BigDecimal totalReceived = activeContracts.stream()
-                                .flatMap(c -> c.getPayments().stream())
-                                .map(Payment::getAmount)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal totalReceived = paymentRepository.sumByTravelId(travelId);
 
                 List<TravelCost> costs = costRepository.findByTravelId(travelId);
 
+                long totalPassengers = activeContracts.stream()
+                    .mapToLong(Contract::getTotalPeople)
+                    .sum();
+
                 long confirmedPassengers = activeContracts.stream()
-                                .filter(c -> c.getStatus().name().equals("CONFIRMED")
-                                                || c.getStatus().name().equals("PAID"))
-                                .mapToLong(Contract::getTotalPeople)
-                                .sum();
+                    .filter(c -> c.getStatus().name().equals("CONFIRMED")
+                            || c.getStatus().name().equals("PAID"))
+                    .mapToLong(Contract::getTotalPeople)
+                    .sum();
 
                 BigDecimal totalCosts = costs.stream()
                                 .map(cost -> {
                                         if (cost.isPerPerson()) {
                                                 return cost.getValue()
-                                                                .multiply(BigDecimal.valueOf(confirmedPassengers));
+                                                                .multiply(BigDecimal.valueOf(totalPassengers));
                                         }
                                         return cost.getValue();
                                 })
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                BigDecimal netProfit = totalExpected.subtract(totalCosts);
+                BigDecimal projectedProfit = totalExpected.subtract(totalCosts);
+                BigDecimal totalRemaining = totalExpected.subtract(totalReceived);
+                BigDecimal actualProfit = totalReceived.subtract(totalCosts);
+                BigDecimal netProfit = totalReceived.subtract(totalCosts);
+
+                List<Map<String, Object>> clientPayments = activeContracts.stream()
+                    .flatMap(c -> c.getClientPayments().stream().map(p -> {
+                        Map<String, Object> item = new java.util.HashMap<>();
+                        item.put("contractId", c.getId());
+                        item.put("clientName", c.getClientName());
+                        item.put("amount", p.getAmount());
+                        item.put("method", p.getMethod());
+                        item.put("date", p.getPaymentDate());
+                        return item;
+                    }))
+                    .toList();
 
                 Map<String, Object> report = new java.util.HashMap<>();
+
+                report.put("totalPassengers", totalPassengers);
+                report.put("confirmedPassengers", confirmedPassengers);
+
                 report.put("totalExpected", totalExpected);
                 report.put("totalReceived", totalReceived);
-                report.put("totalRemaining", totalExpected.subtract(totalReceived));
+                report.put("totalRemaining", totalRemaining);
+
                 report.put("totalCosts", totalCosts);
-                report.put("netProfit", netProfit);
-                report.put("confirmedPassengers", confirmedPassengers);
+
+                report.put("projectedProfit", projectedProfit);
+                report.put("actualProfit", actualProfit);
+                report.put("totalPayments", totalReceived);
+
                 report.put("costs", costs);
                 return report;
         }

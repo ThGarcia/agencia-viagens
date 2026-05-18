@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { data, useParams } from "react-router-dom";
 import { getFinancialReport, addTravelCost, deleteTravelCost } from "../services/financialService";
 import type { FinancialReport, TravelCost } from "../types/financial";
 
@@ -15,6 +15,7 @@ export default function AdminFinancial() {
             const data = await getFinancialReport(travelId);
             setReport(data);
             setCosts(data.costs || []); 
+            console.log(data)
         } catch (error) {
             console.error("Erro ao carregar dados:", error);
         }
@@ -50,7 +51,7 @@ export default function AdminFinancial() {
                 <Card title="Já Recebido" value={report.totalReceived} color="#3498db" />
                 <Card title="Falta Receber" value={report.totalRemaining} color="#e67e22" />
                 <Card title="Custos Totais" value={report.totalCosts} color="#e74c3c" />
-                <Card title="Lucro Estimado" value={report.netProfit} color="#9b59b6" />
+                <Card title="Lucro Estimado" value={report.projectedProfit} color="#9b59b6" />
             </div>
 
             <hr />
@@ -97,7 +98,7 @@ export default function AdminFinancial() {
                             <td style={{ padding: 10 }}>{c.description}</td>
                             <td>{c.perPerson ? "Por Pessoa" : "Fixo"}</td>
                             <td>R$ {c.value.toFixed(2)}</td>
-                            <td>R$ {c.perPerson ? (c.value * report.confirmedPassengers).toFixed(2) : c.value.toFixed(2)}</td>
+                            <td>R$ {c.perPerson ? (c.value * report.totalPassengers).toFixed(2) : c.value.toFixed(2)}</td>
                             <td>
                                 <button onClick={() => c.id && handleDelete(c.id)} style={{ color: "red", border: "none", background: "none", cursor: "pointer" }}>🗑️ Excluir</button>
                             </td>
