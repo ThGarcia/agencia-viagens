@@ -34,4 +34,6 @@ public class ContractResponseDTO {
     private TravelResponseDTO travel;
     private List<PassengerDTO> passengers;
     private List<ClientPaymentDTO> clientPayments;
+    private BigDecimal totalPaid;
+    private BigDecimal remainingAmount;
 }

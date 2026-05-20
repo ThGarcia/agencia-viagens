@@ -105,8 +105,7 @@ export default function PaymentTable({ contract, reload }: PaymentProps) {
                         <Button onClick={handleAddPayment} text="✅" />
                     </div>
                 </div>
-            )
-            }
+            )}
 
             <table className="table-data">
                 <thead>
@@ -123,7 +122,12 @@ export default function PaymentTable({ contract, reload }: PaymentProps) {
                             <td>R$ {payment.paymentPrice?.toFixed(2)}</td>
                             <td>{payment.paymentType}</td>
                             <td>{payment.paymentDay}</td>
-                            <td>R$ {payment.paymentRemaining?.toFixed(2)}</td>
+                            <td>
+                                R$ {(contract.priceTotal - contract.clientPayments
+                                    .slice(0, index + 1)
+                                    .reduce((sum, p) => sum + p.paymentPrice, 0)
+                                ).toFixed(2)}
+                            </td>
                         </tr>
                     ))}
                 </tbody>

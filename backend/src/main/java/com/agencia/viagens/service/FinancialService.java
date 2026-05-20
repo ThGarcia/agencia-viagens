@@ -64,7 +64,10 @@ public class FinancialService {
                                 .filter(java.util.Objects::nonNull)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                BigDecimal totalReceived = paymentRepository.sumByTravelId(travelId);
+                BigDecimal totalReceived = activeContracts.stream()
+                    .flatMap(c -> c.getClientPayments().stream())
+                    .map(cp -> cp.getPaymentPrice())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 List<TravelCost> costs = costRepository.findByTravelId(travelId);
 
@@ -98,9 +101,9 @@ public class FinancialService {
                         Map<String, Object> item = new java.util.HashMap<>();
                         item.put("contractId", c.getId());
                         item.put("clientName", c.getClientName());
-                        item.put("amount", p.getAmount());
-                        item.put("method", p.getMethod());
-                        item.put("date", p.getPaymentDate());
+                        item.put("amount", p.getPaymentPrice());
+                        item.put("method", p.getPaymentType());
+                        item.put("date", p.getPaymentDay());
                         return item;
                     }))
                     .toList();

@@ -8,8 +8,11 @@ import { roomOptions } from "../types/select";
 import "./Test.css";
 
 import Input from "../components/input/Input";
+import Button from "../components/button/Button";
 import SearchInput from "../components/input/InputSearch";
 import SelectInput from "../components/input/InputSelect";
+import { validateFullName, validateCPF, validatePhone } from "../utils/validator";
+import { maskCPF, maskDate, maskPhone, maskCEP, maskBRL } from "../utils/masks";
 
 export default function Test() {
     const { id } = useParams();
@@ -141,11 +144,15 @@ export default function Test() {
             <Input label='Viagem' value={contract?.travel.title} />
             <Input label='Data' value={contract?.travel.departureDate} />
             <Input
-                label='Valor'
-                type='number'
-                value={contract?.priceTotal}
+                label="Valor"
+                type="text"
+                value={maskBRL(contract?.priceTotal || 0)}
                 onChange={(e) => {
-                    const value = Number(e.target.value);
+
+                    const raw = e.target.value
+                        .replace(/\D/g, "");
+
+                    const value = Number(raw) / 100;
 
                     setContract(prev => {
                         if (!prev) return prev;
@@ -221,13 +228,15 @@ export default function Test() {
                 onChange={(e) =>
                     setForm({ ...form, clientName: e.target.value })
                 }
+                validator={validateFullName}
             />
             <Input
                 label="CPF"
                 value={form.clientCpf}
                 onChange={(e) =>
-                    setForm({ ...form, clientCpf: e.target.value })
+                    setForm({ ...form, clientCpf: maskCPF(e.target.value) })
                 }
+                validator={validateCPF}
             />
             <Input
                 label="RG"
@@ -240,15 +249,16 @@ export default function Test() {
                 label="Data de Nascimento"
                 value={form.clientBirthDate}
                 onChange={(e) =>
-                    setForm({ ...form, clientBirthDate: e.target.value })
+                    setForm({ ...form, clientBirthDate: maskDate(e.target.value) })
                 }
             />
             <Input
                 label="Telefone"
                 value={form.clientPhone}
                 onChange={(e) =>
-                    setForm({ ...form, clientPhone: e.target.value })
+                    setForm({ ...form, clientPhone: maskPhone(e.target.value) })
                 }
+                validator={validatePhone}
             />
 
             <h2 style={{ margin: 20 }}>Endereço</h2>
@@ -298,7 +308,7 @@ export default function Test() {
                 label="CEP"
                 value={form.addressZip}
                 onChange={(e) =>
-                    setForm({ ...form, addressZip: e.target.value })
+                    setForm({ ...form, addressZip: maskCEP(e.target.value) })
                 }
             />
 
@@ -320,7 +330,8 @@ export default function Test() {
                     <Input
                         label="CPF"
                         value={p.cpf}
-                        onChange={(e) => updatePassenger(i, "cpf", e.target.value)}
+                        onChange={(e) => updatePassenger(i, "cpf", maskCPF(e.target.value))}
+                        validator={validateCPF}
                     />
                     <Input
                         label="RG"
@@ -330,20 +341,16 @@ export default function Test() {
                     <Input
                         label="Data de Nascimento"
                         value={p.birthDate}
-                        onChange={(e) => updatePassenger(i, "birthDate", e.target.value)}
+                        onChange={(e) => updatePassenger(i, "birthDate", maskDate(e.target.value))}
                     />
 
-                    <button onClick={() => removePassenger(i)}>
-                        ❌ Remover
-                    </button>
+                    <Button onClick={() => removePassenger(i)} text="❌ Remover" />
                 </div>
             ))}
 
-            <button onClick={addPassenger}>
-                + Adicionar passageiro
-            </button>
+            <Button onClick={addPassenger} text="+ Adicionar passageiro" />
 
-            <button
+            <Button
                 onClick={async () => {
                     if (!contract?.id) return;
 
@@ -368,9 +375,7 @@ export default function Test() {
                         alert("Erro ao atualizar");
                     }
                 }}
-            >
-                💾 Salvar
-            </button>
+                text="💾 Salvar" />
 
         </div >
     );

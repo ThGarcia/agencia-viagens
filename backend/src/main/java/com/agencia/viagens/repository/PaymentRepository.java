@@ -11,10 +11,4 @@ import java.util.UUID;
 
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByContractId(UUID contractId);
-    @Query("""
-        SELECT COALESCE(SUM(p.amount), 0)
-        FROM Payment p
-        WHERE p.contract.travel.id = :travelId
-    """)
-    BigDecimal sumByTravelId(@Param("travelId") UUID travelId);
 }

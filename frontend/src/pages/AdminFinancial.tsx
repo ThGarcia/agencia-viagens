@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getFinancialReport, addTravelCost, deleteTravelCost } from "../services/financialService";
 import type { FinancialReport, TravelCost } from "../types/financial";
+
+import Input from "../components/input/Input";
+import Button from "../components/button/Button";
 
 export default function AdminFinancial() {
     const { travelId } = useParams<{ travelId: string }>();
@@ -59,14 +62,14 @@ export default function AdminFinancial() {
             <div style={{ padding: 20, borderRadius: 8, marginTop: 20, marginBottom: 20 }}>
                 <h3>➕ Lançar Custo (Saída)</h3>
                 <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                    <input 
-                        placeholder="Ex: Ônibus, Hotel..." 
+                    <Input 
+                        label="Ex: Ônibus, Hotel..." 
                         value={newCost.description}
                         onChange={e => setNewCost({...newCost, description: e.target.value})}
                     />
-                    <input 
+                    <Input 
                         type="number" 
-                        placeholder="Valor R$" 
+                        label="Valor R$" 
                         value={newCost.value || ""}
                         onChange={e => setNewCost({...newCost, value: Number(e.target.value)})}
                     />
@@ -77,7 +80,7 @@ export default function AdminFinancial() {
                             onChange={e => setNewCost({...newCost, perPerson: e.target.checked})}
                         /> Por pessoa?
                     </label>
-                    <button onClick={handleAddCost} style={{ backgroundColor: "#2c3e50", color: "white" }}>Salvar Custo</button>
+                    <Button onClick={handleAddCost} text="Salvar" />
                 </div>
             </div>
 

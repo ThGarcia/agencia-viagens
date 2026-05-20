@@ -16,7 +16,9 @@ export interface FinancialReport {
     totalExpected: number;    
     totalReceived: number;   
     totalRemaining: number;   
-    totalCosts: number;     
+    totalCosts: number;
+    totalPayments: number;
+    actualProfit: number;     
     projectedProfit: number;       
     totalPassengers: number;
     costs: TravelCost[];
