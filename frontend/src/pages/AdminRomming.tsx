@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { getPassengersByTravel } from "../services/contractService";
 import type { PassengerListDTO } from "../types/contract";
 
+import Button from "../components/button/Button";
+
 export default function AdminRomming() {
     const { id } = useParams<{ id: string }>();
     const [data, setData] = useState<PassengerListDTO[]>([]);
@@ -24,12 +26,7 @@ export default function AdminRomming() {
     return (
         <div style={{ padding: 20 }}>
             <h1>Lista de Passageiros</h1>
-            <button
-                onClick={() => window.print()}
-                style={{ marginBottom: 20, padding: "10px 20px", cursor: "pointer", backgroundColor: "#2ecc71", color: "white", border: "none", borderRadius: "5px" }}
-            >
-                🖨️ Imprimir Lista
-            </button>
+            <Button onClick={() => window.print()} text="🖨️ Imprimir Lista" />
             <table border={1} cellPadding={8} style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                     <tr>

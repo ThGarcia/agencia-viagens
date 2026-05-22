@@ -6,6 +6,10 @@ import type { TravelResponse as Travel } from "../types/travel";
 import type { Passenger, ContractRequest } from "../types/contract";
 
 import Loader from "../components/Loader";
+import Input from "../components/input/Input";
+import Button from "../components/button/Button";
+import { normalizeHouseNumber, validateCPF, validateDate, validateFullName, validatePhone } from "../utils/validator";
+import { maskCEP, maskCPF, maskDate, maskPhone } from "../utils/masks";
 
 export default function CreateContract() {
     const [params] = useSearchParams();
@@ -47,10 +51,6 @@ export default function CreateContract() {
     if (loading) return <Loader />;
     if (!travel) return <p>Viagem não encontrada</p>;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
     const addPassenger = () => {
         setPassengers([
             ...passengers,
@@ -85,38 +85,111 @@ export default function CreateContract() {
 
             <h2>Dados de Cliente</h2>
 
-            <input name="clientName" placeholder="Nome" onChange={handleChange} />
-            <input name="clientCpf" placeholder="CPF" onChange={handleChange} />
-            <input name="clientRg" placeholder="RG" onChange={handleChange} />
-            <input name="clientBirthDate" placeholder="data nascimento" onChange={handleChange} />
-            <input name="clientPhone" placeholder="Telefone" onChange={handleChange} />
+            <Input
+                value={form.clientName}
+                label="Nome"
+                onChange={(e) =>
+                    setForm({ ...form, clientName: e.target.value })
+                }
+                validator={validateFullName}
+            />
+            <Input
+                value={form.clientCpf}
+                label="CPF"
+                onChange={(e) =>
+                    setForm({ ...form, clientCpf: maskCPF(e.target.value) })
+                }
+                validator={validateCPF}
+            />
+            <Input
+                value={form.clientRg}
+                label="RG"
+                onChange={(e) =>
+                    setForm({ ...form, clientRg: e.target.value })
+                }
+            />
+            <Input
+                value={form.clientBirthDate}
+                label="data nascimento"
+                onChange={(e) =>
+                    setForm({ ...form, clientBirthDate: maskDate(e.target.value) })
+                }
+                validator={validateDate}
+            />
+            <Input
+                value={form.clientPhone}
+                label="Telefone"
+                onChange={(e) =>
+                    setForm({ ...form, clientPhone: maskPhone(e.target.value) })
+                }
+                validator={validatePhone}
+            />
 
             <h2>Endereço</h2>
 
-            <input name="addressStreet" placeholder="Rua" onChange={handleChange} />
-            <input name="addressNumber" placeholder="Numero" onChange={handleChange} />
-            <input name="addressComplement" placeholder="Complemento" onChange={handleChange} />
-            <input name="addressNeighborhood" placeholder="Bairro" onChange={handleChange} />
-            <input name="addressCity" placeholder="Cidade" onChange={handleChange} />
-            <input name="addressState" placeholder="Estado" onChange={handleChange} />
-            <input name="addressZip" placeholder="CEP" onChange={handleChange} />
+            <Input
+                value={form.addressStreet}
+                label="Rua"
+                onChange={(e) =>
+                    setForm({ ...form, addressStreet: (e.target.value) })
+                }
+            />
+            <Input
+                value={form.addressNumber}
+                label="Numero"
+                onChange={(e) =>
+                    setForm({ ...form, addressNumber: (e.target.value) })
+                }
+            />
+            <Input
+                value={form.addressComplement}
+                label="Complemento"
+                onChange={(e) =>
+                    setForm({ ...form, addressComplement: (e.target.value) })
+                }
+            />
+            <Input
+                value={form.addressNeighborhood}
+                label="Bairro"
+                onChange={(e) =>
+                    setForm({ ...form, addressNeighborhood: (e.target.value) })
+                }
+            />
+            <Input
+                value={form.addressCity}
+                label="Cidade"
+                onChange={(e) =>
+                    setForm({ ...form, addressCity: (e.target.value) })
+                }
+            />
+            <Input
+                value={form.addressState}
+                label="Estado"
+                onChange={(e) =>
+                    setForm({ ...form, addressState: (e.target.value) })
+                }
+            />
+            <Input
+                value={form.addressZip}
+                label="CEP"
+                onChange={(e) =>
+                    setForm({ ...form, addressZip: maskCEP(e.target.value) })
+                }
+            />
 
             <h2>Passageiros</h2>
 
             {passengers.map((_, i) => (
                 <div key={i}>
-                    <input placeholder="Nome" onChange={(e) => updatePassenger(i, "name", e.target.value)} />
-                    <input placeholder="CPF" onChange={(e) => updatePassenger(i, "cpf", e.target.value)} />
-                    <input placeholder="RG" onChange={(e) => updatePassenger(i, "rg", e.target.value)} />
-                    <input placeholder="data nascimento" onChange={(e) => updatePassenger(i, "birthDate", e.target.value)} />
+                    <Input label="Nome" onChange={(e) => updatePassenger(i, "name", e.target.value)} />
+                    <Input label="CPF" onChange={(e) => updatePassenger(i, "cpf", maskCPF(e.target.value))} />
+                    <Input label="RG" onChange={(e) => updatePassenger(i, "rg", e.target.value)} />
+                    <Input label="data nascimento" onChange={(e) => updatePassenger(i, "birthDate", maskDate(e.target.value))} />
                 </div>
             ))}
 
-            <button onClick={addPassenger}>+ Adicionar passageiro</button>
-            <br /><br />
-            <button onClick={handleSubmit}>
-                Enviar
-            </button>
+            <Button onClick={addPassenger} text="+ Adicionar passageiro" />
+            <Button onClick={handleSubmit} text="Enviar" />
         </div>
     );
 }

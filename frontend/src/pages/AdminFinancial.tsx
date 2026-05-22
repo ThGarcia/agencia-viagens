@@ -85,7 +85,7 @@ export default function AdminFinancial() {
             </div>
 
             <h3>💸 Detalhamento de Custos</h3>
-            <table border={1} style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+            <table border={1} style={{ width: "100%", borderCollapse: "collapse", textAlign: "center", marginTop: 20 }}>
                 <thead>
                     <tr>
                         <th style={{ padding: 10 }}>Descrição</th>
@@ -103,7 +103,7 @@ export default function AdminFinancial() {
                             <td>R$ {c.value.toFixed(2)}</td>
                             <td>R$ {c.perPerson ? (c.value * report.totalPassengers).toFixed(2) : c.value.toFixed(2)}</td>
                             <td>
-                                <button onClick={() => c.id && handleDelete(c.id)} style={{ color: "red", border: "none", background: "none", cursor: "pointer" }}>🗑️ Excluir</button>
+                                <Button onClick={() => c.id && handleDelete(c.id)} text="🗑️ Excluir" bgColor="transparent" color="red" />
                             </td>
                         </tr>
                     ))}

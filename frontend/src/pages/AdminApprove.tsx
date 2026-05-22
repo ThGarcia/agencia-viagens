@@ -3,8 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { approveContract } from "../services/contractService";
 import type { ContractResponse } from "../types/contract";
 import { getContractById } from "../services/contractService";
+import { roomOptions } from "../types/select";
 
 import Loader from "../components/Loader";
+import Input from "../components/input/Input";
+import Button from "../components/button/Button";
+import SelectInput from "../components/input/InputSelect";
 
 export default function AdminApprove() {
     const { id } = useParams();
@@ -64,33 +68,36 @@ export default function AdminApprove() {
                 <p>Nenhum passageiro</p>
             )}
 
-            <h3>Valor</h3>
-            <input
+            <Input
+                label="Valor"
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
             />
 
-            <h3>Forma de pagamento</h3>
-            <input
-                placeholder="Ex: PIX, Cartão, Dinheiro..."
+            <Input
+                label="Forma de pagamento"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
             />
 
-            <h3>Quarto</h3>
-            <select onChange={(e) => setRoomType(e.target.value)}>
-                <option value="" disabled>Selecione o tipo de quarto</option>
-                <option value="SINGLE">Individual</option>
-                <option value="COUPLE">Casal</option>
-                <option value="DOUBLE">Duplo</option>
-                <option value="TRIPLE">Triplo</option>
-                <option value="QUAD">Quadruplo</option>
-            </select>
+            <SelectInput
+                label="Quarto"
+                value={contract?.roomType || ""}
+                options={roomOptions}
+                onChange={(value) => {
+                    setContract(prev => {
+                        if (!prev) return prev;
 
-            <button onClick={handleApprove}>
-                Aprovar contrato
-            </button>
+                        return {
+                            ...prev,
+                            roomType: value
+                        };
+                    });
+                }}
+            />
+
+            <Button onClick={handleApprove} text="Aprovar contrato" />
         </div>
     );
 }

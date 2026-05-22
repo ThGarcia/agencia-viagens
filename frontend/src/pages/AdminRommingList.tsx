@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getTravels } from "../services/travelService";
+import type { TravelResponse } from "../types/travel";
 
-interface Travel {
-    id: string;
-    title: string;
-    departureDate: string;
-    returnDate: string;
-}
+import Button from "../components/button/Button";
 
 export default function AdminRommingList() {
-    const [viagens, setViagens] = useState<Travel[]>([]);
+    const [viagens, setViagens] = useState<TravelResponse[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getTravels()
             .then(setViagens)
             .catch(err => console.error("Erro ao carregar viagens:", err));
     }, []);
+
+    const handleClick = (travelId: string) => {
+        navigate(`/admin/homming/${travelId}`);
+    }
 
     return (
         <div style={{ padding: 20 }}>
@@ -27,11 +28,7 @@ export default function AdminRommingList() {
                         <div>
                             <strong>{v.title}</strong> - {v.departureDate} a {v.returnDate}
                         </div>
-                        <Link to={`/admin/homming/${v.id}`}>
-                            <button style={{ backgroundColor: "#3498db", color: "white", border: "none", padding: "8px 15px", borderRadius: 5, cursor: "pointer" }}>
-                                Ver Passageiros
-                            </button>
-                        </Link>
+                            <Button text="Ver passageiros" onClick={() => handleClick(v.id)} />
                     </div>
                 ))}
             </div>

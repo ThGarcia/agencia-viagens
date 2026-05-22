@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import type { TravelResponse, TravelRequest } from "../types/travel";
 import { getTravels, createTravel, updateTravel, activateTravel, deactivateTravel } from "../services/travelService";
 
+import Input from "../components/input/Input";
+import Button from "../components/button/Button";
+
 interface TravelFormState extends Omit<Partial<TravelResponse>, 'inclusions' | 'observations'> {
     inclusions: string;
     observations: string;
@@ -91,25 +94,25 @@ export default function AdminTravels() {
             <div style={{ border: "1px solid #ccc", padding: 10, marginBottom: 20 }}>
                 <h2>{selected ? "Editar Viagem" : "Nova Viagem"}</h2>
 
-                <input placeholder="Título" value={form.title || ""}
+                <Input label="Título" value={form.title || ""}
                     onChange={e => setForm({ ...form, title: e.target.value })} />
 
-                <input placeholder="Subtítulo" value={form.subtitle || ""}
+                <Input label="Subtítulo" value={form.subtitle || ""}
                     onChange={e => setForm({ ...form, subtitle: e.target.value })} />
 
-                <input placeholder="Descrição" value={form.description || ""}
+                <Input label="Descrição" value={form.description || ""}
                     onChange={e => setForm({ ...form, description: e.target.value })} />
 
-                <input placeholder="Imagem URL (/images/...)" value={form.imageUrl || ""}
+                <Input label="Imagem URL (/images/...)" value={form.imageUrl || ""}
                     onChange={e => setForm({ ...form, imageUrl: e.target.value })} />
 
-                <input placeholder="Data saída" value={form.departureDate || ""}
+                <Input label="Data saída" value={form.departureDate || ""}
                     onChange={e => setForm({ ...form, departureDate: e.target.value })} />
 
-                <input placeholder="Data retorno" value={form.returnDate || ""}
+                <Input label="Data retorno" value={form.returnDate || ""}
                     onChange={e => setForm({ ...form, returnDate: e.target.value })} />
 
-                <input type="number" placeholder="Preço"
+                <Input type="number" label="Preço"
                     value={form.priceBase || 0}
                     onChange={e => setForm({ ...form, priceBase: Number(e.target.value) })} />
 
@@ -121,9 +124,7 @@ export default function AdminTravels() {
                     value={form.observations || ""}
                     onChange={e => setForm({ ...form, observations: e.target.value })} />
 
-                <button onClick={handleSave}>
-                    Salvar
-                </button>
+                <Button onClick={handleSave} text="Salvar" />
             </div>
 
             <h2>Ativadas</h2>
@@ -136,18 +137,23 @@ export default function AdminTravels() {
                         style: "currency",
                         currency: "BRL",
                     })}</p>
-                    <button onClick={() => handleEdit(t)}>Editar</button>
-                    <button onClick={() => handleToggle(t)}>Desativar</button>
+                    <Button onClick={() => handleEdit(t)} text="Editar" />
+                    <Button onClick={() => handleToggle(t)} text="Desativar" />
                 </div>
             ))}
 
             <h2>Desativadas</h2>
             {inactive.map(t => (
                 <div key={t.id} style={{ border: "1px solid red", margin: 5, padding: 10 }}>
-                    <strong>{t.title}</strong>
-
-                    <button onClick={() => handleEdit(t)}>Editar</button>
-                    <button onClick={() => handleToggle(t)}>Ativar</button>
+                    <strong>Viagem: {t.title}</strong>
+                    <p>{t.description}</p>
+                    <p>{t.departureDate} - {t.returnDate}</p>
+                    <p>Valor: {t.priceBase.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                    })}</p>
+                    <Button onClick={() => handleEdit(t)} text="Editar" />
+                    <Button onClick={() => handleToggle(t)} text="Ativar" />
                 </div>
             ))}
         </div>
