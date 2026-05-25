@@ -77,29 +77,31 @@ export default function AdminContracts() {
     const countByStatus = (status: string) =>
         contracts.filter(c => c.status === status).length;
 
+    const statusButtons = [
+        { value: "PENDING", label: `Pendentes (${countByStatus("PENDING")})`, color: "#e74c3c" },
+        { value: "APPROVED", label: `Aprovados (${countByStatus("APPROVED")})`, color: "#f1c40f" },
+        { value: "PAID", label: `Pagos (${countByStatus("PAID")})`, color: "#3498db" },
+        { value: "CONFIRMED", label: `Confirmados (${countByStatus("CONFIRMED")})`, color: "#2ecc71" },
+        { value: "", label: `Contratos (${contracts.length})`, color: "#000" },
+        { value: "CANCELLED", label: `Cancelados (${countByStatus("CANCELLED")})`, color: "#7f8c8d" },
+    ];
+
     return (
         <div style={{ padding: 20 }}>
             <h1>Painel de Contratos</h1>
 
             <div style={{ marginBottom: 20, display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                <button onClick={() => setStatusFilter("PENDING")} style={btnStyle(statusFilter === "PENDING", "#e74c3c")}>
-                    🔴 Pendentes ({countByStatus("PENDING")})
-                </button>
-                <button onClick={() => setStatusFilter("APPROVED")} style={btnStyle(statusFilter === "APPROVED", "#f1c40f")}>
-                    🟡 Aprovados ({countByStatus("APPROVED")})
-                </button>
-                <button onClick={() => setStatusFilter("PAID")} style={btnStyle(statusFilter === "PAID", "#3498db")}>
-                    🔵 Pagos ({countByStatus("PAID")})
-                </button>
-                <button onClick={() => setStatusFilter("CONFIRMED")} style={btnStyle(statusFilter === "CONFIRMED", "#2ecc71")}>
-                    🟢 Confirmados ({countByStatus("CONFIRMED")})
-                </button>
-                <button onClick={() => setStatusFilter("")} style={btnStyle(statusFilter === "", "#fefefe")}>
-                    ⚪ Contratos ({contracts.length})
-                </button>
-                <button onClick={() => setStatusFilter("CANCELLED")} style={btnStyle(statusFilter === "CANCELLED", "#7f8c8d")}>
-                    ⚫ Cancelados ({countByStatus("CANCELLED")})
-                </button>
+                {statusButtons.map((button) => (
+                    <Button
+                        key={button.value || "ALL"}
+                        onClick={() => setStatusFilter(button.value)}
+                        text={button.label}
+                        active={statusFilter === button.value}
+                        activeColor={button.color}
+                        bgColor="#fff"
+                        color="#000"
+                    />
+                ))}
             </div>
 
             <SelectInput
@@ -120,41 +122,40 @@ export default function AdminContracts() {
                     <h2>{travel}</h2>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "15px" }}>
-                        {grouped[travel].map((c) => (
-                            <div key={c.id} style={cardStyle}>
-                                <h3>{c.clientName}</h3>
-                                <p><strong>Status:</strong> {c.status}</p>
-                                <p><strong>Total:</strong> {maskBRL(c.priceTotal)}</p>
-                                <p><strong>Pagamento:</strong> {c.paymentMethod}</p>
+                        {grouped[travel].map((contract) => (
+                            <div key={contract.id} style={cardStyle}>
+                                <h3>{contract.clientName}</h3>
+                                <p><strong>Status:</strong> {contract.status}</p>
+                                <p><strong>Total:</strong> {maskBRL(contract.priceTotal)}</p>
+                                <p><strong>Pagamento:</strong> {contract.paymentMethod}</p>
 
-                                {(c.status === "APPROVED" || c.status === "PAID") && (
-                                    <PaymentTable contract={c} reload={loadData} />
+                                {(contract.status === "APPROVED" || contract.status === "PAID") && (
+                                    <PaymentTable contract={contract} reload={loadData} />
                                 )}
 
                                 <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginTop: "10px" }}>
-
-                                    {c.status === "PENDING" && (
-                                        <Button onClick={() => navigate(`/admin/contratos/${c.id}`)} text="⚙️ Analisar e Aprovar" bgColor="#f1c40f" color="#FFF" />
+                                    {contract.status === "PENDING" && (
+                                        <Button onClick={() => navigate(`/admin/contratos/${contract.id}`)} text="Analisar e Aprovar" bgColor="#f1c40f" color="#FFF" />
                                     )}
 
-                                    {c.tokenAccess && (
-                                        <Button onClick={() => handleViewClientContract(c.tokenAccess!)} text="👁️ Ver Contrato" bgColor="#34495e" color="#FFF" />
+                                    {contract.tokenAccess && (
+                                        <Button onClick={() => handleViewClientContract(contract.tokenAccess!)} text="Ver Contrato" bgColor="#34495e" color="#FFF" />
                                     )}
 
-                                    {c.tokenAccess && (
-                                        <Button onClick={() => { navigate(`/test/${c.id}`) }} text="✏️ Editar Contrato" bgColor="#9b59b6" color="#FFF" />
+                                    {contract.tokenAccess && (
+                                        <Button onClick={() => { navigate(`/test/${contract.id}`); }} text="Editar Contrato" bgColor="#9b59b6" color="#FFF" />
                                     )}
 
-                                    {c.status === "APPROVED" && (
-                                        <Button onClick={() => handleMarkAsPaid(c.id)} text="💰 Marcar como Pago" bgColor="#3498db" color="#FFF" />
+                                    {contract.status === "APPROVED" && (
+                                        <Button onClick={() => handleMarkAsPaid(contract.id)} text="Marcar como Pago" bgColor="#3498db" color="#FFF" />
                                     )}
 
-                                    {c.status === "PAID" && (
-                                        <Button onClick={() => handleConfirm(c.id)} text="✅ Confirmar Vaga" bgColor="#2ecc71" color="#FFF" />
+                                    {contract.status === "PAID" && (
+                                        <Button onClick={() => handleConfirm(contract.id)} text="Confirmar Vaga" bgColor="#2ecc71" color="#FFF" />
                                     )}
 
-                                    {c.status !== "CANCELLED" && (
-                                        <Button onClick={() => handleCancel(c.id)} text="🗑️ Cancelar" bgColor="#e74c3c" color="#FFF" />
+                                    {contract.status !== "CANCELLED" && (
+                                        <Button onClick={() => handleCancel(contract.id)} text="Cancelar" bgColor="#e74c3c" color="#FFF" />
                                     )}
                                 </div>
                             </div>
@@ -165,12 +166,6 @@ export default function AdminContracts() {
         </div>
     );
 }
-
-// Estilos auxiliares
-const btnStyle = (active: boolean, color: string) => ({
-    backgroundColor: active ? color : "#fff",
-    color: active ? "#fff" : "#000",
-} as const);
 
 const cardStyle = {
     border: "1px solid #ddd",

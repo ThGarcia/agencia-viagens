@@ -63,7 +63,7 @@ export default function AdminFinancial() {
         cost.perPerson ? "Por Pessoa" : "Fixo",
         `R$ ${maskTableCurrency(cost.value)}`,
         `R$ ${maskTableCurrency(cost.perPerson ? cost.value * report.totalPassengers : cost.value)}`,
-        <Button onClick={() => cost.id && handleDelete(cost.id)} text="Excluir" bgColor="transparent" color="red" />,
+        <Button onClick={() => cost.id && handleDelete(cost.id)} text="🗑️ Excluir" bgColor="transparent" color="red" />,
     ]);
 
     const contractPaymentRows = contracts.map((contract) => {

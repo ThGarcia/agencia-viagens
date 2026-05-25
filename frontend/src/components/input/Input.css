@@ -8,7 +8,8 @@
 }
 
 .input-group input,
-.input-group select {
+.input-group select,
+.input-group textarea {
   width: 100%;
   padding: 10px 0px 2px 10px;
   border: none;
@@ -16,6 +17,34 @@
   background: transparent;
   color: white;
   outline: none;
+}
+
+.input-group textarea {
+  min-height: 90px;
+  resize: vertical;
+  font: inherit;
+}
+
+textarea {
+  width: 100%;
+  min-height: 90px;
+  margin-top: 10px;
+  padding: 10px 0px 2px 10px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  color: white;
+  outline: none;
+  resize: vertical;
+  font: inherit;
+}
+
+textarea::placeholder {
+  color: #aaa;
+}
+
+textarea:focus {
+  border-bottom-color: #fff;
 }
 
 .input-group label {
@@ -65,7 +94,9 @@
 .input-group input:focus+label,
 .input-group input:not(:placeholder-shown)+label,
 .input-group select:focus+label,
-.input-group select:not([value=""])+label {
+.input-group select:not([value=""])+label,
+.input-group textarea:focus+label,
+.input-group textarea:not(:placeholder-shown)+label {
   top: -8px;
   font-size: 12px;
   color: #fff;
