@@ -8,7 +8,7 @@ import type { Passenger, ContractRequest } from "../types/contract";
 import Loader from "../components/Loader";
 import Input from "../components/input/Input";
 import Button from "../components/button/Button";
-import { normalizeHouseNumber, validateCPF, validateRG, validateDate, validateFullName, validatePhone } from "../utils/validator";
+import { normalizeHouseNumber, validateCPF, validateRG, validateDate, validateFullName, validatePhone, validateCEP, fetchAddressByCEP } from "../utils/validator";
 import { capitalizeName, maskCEP, maskCPF, maskRG, maskDate, maskPhone } from "../utils/masks";
 
 export default function CreateContract() {
@@ -58,7 +58,48 @@ export default function CreateContract() {
         ]);
     };
 
+    const isRequired = (value: string) => value.trim() !== "";
+
+    const isFormValid = () => {
+        const requiredFields = [
+            form.clientName,
+            form.clientCpf,
+            form.clientBirthDate,
+            form.clientPhone,
+            form.addressStreet,
+            form.addressComplement,
+            form.addressNeighborhood,
+            form.addressCity,
+            form.addressState,
+        ];
+
+        if (requiredFields.some((field) => !isRequired(field))) {
+            return false;
+        }
+
+        const hasInvalidClientData =
+            !validateFullName(form.clientName) ||
+            !validateCPF(form.clientCpf) ||
+            !validateDate(form.clientBirthDate) ||
+            !validatePhone(form.clientPhone);
+
+        if (hasInvalidClientData) {
+            return false;
+        }
+
+        return passengers.every((passenger) =>
+            validateFullName(passenger.name) &&
+            validateCPF(passenger.cpf) &&
+            validateDate(passenger.birthDate)
+        );
+    };
+
     const handleSubmit = async () => {
+        if (!isFormValid()) {
+            alert("Preencha todos os campos corretamente antes de enviar.");
+            return;
+        }
+
         try {
             const data: ContractRequest = {
                 ...form,
@@ -78,6 +119,53 @@ export default function CreateContract() {
         const updated = [...passengers];
         updated[index][field] = value;
         setPassengers(updated);
+    };
+
+    const handleZipChange = async (value: string) => {
+        const addressZip = maskCEP(value);
+        const emptyAddress = {
+            addressStreet: "",
+            addressNeighborhood: "",
+            addressCity: "",
+            addressState: "",
+        };
+
+        if (!validateCEP(addressZip)) {
+            setForm((prev) => ({
+                ...prev,
+                addressZip,
+                ...emptyAddress,
+            }));
+            return;
+        }
+
+        setForm((prev) => ({ ...prev, addressZip }));
+
+        const address = await fetchAddressByCEP(addressZip);
+
+        if (!address) {
+            setForm((prev) => {
+                if (prev.addressZip !== addressZip) return prev;
+
+                return {
+                    ...prev,
+                    ...emptyAddress,
+                };
+            });
+            return;
+        }
+
+        setForm((prev) => {
+            if (prev.addressZip !== addressZip) return prev;
+
+            return {
+                ...prev,
+                addressStreet: address.street,
+                addressNeighborhood: address.neighborhood,
+                addressCity: address.city,
+                addressState: address.state,
+            };
+        });
     };
 
     return (
@@ -179,9 +267,8 @@ export default function CreateContract() {
             <Input
                 value={form.addressZip}
                 label="CEP"
-                onChange={(e) =>
-                    setForm({ ...form, addressZip: maskCEP(e.target.value) })
-                }
+                onChange={(e) => handleZipChange(e.target.value)}
+                validator={validateCEP}
                 errorMessage="Digite um CEP vãlido: xxxxx-xxx"
             />
 

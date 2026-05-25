@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { clientPayment } from "../../services/contractService";
 import type { ContractResponse } from "../../types/contract";
-import type { TravelResponse } from "../../types/travel";
-import { getContracts } from "../../services/contractService";
-import { getTravels } from "../../services/travelService";
 import "./Table.css";
 
 import Input from "../input/Input";
@@ -15,21 +12,10 @@ type PaymentProps = {
 };
 
 export default function PaymentTable({ contract, reload }: PaymentProps) {
-    const [contracts, setContracts] = useState<ContractResponse[]>([]);
-    const [travels, setTravels] = useState<TravelResponse[]>([]);
     const [paymentInputs, setPaymentInputs] = useState<Record<string, {
         price: number | null;
         type: string;
     }>>({});
-
-    const loadData = () => {
-        getContracts().then(setContracts);
-        getTravels().then(setTravels);
-    };
-
-    useEffect(() => {
-        loadData();
-    }, []);
 
     const handleAddPayment = async () => {
         const data = paymentInputs[contract.id];

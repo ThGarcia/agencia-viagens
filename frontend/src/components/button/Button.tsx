@@ -6,16 +6,15 @@ type ButtonProps = {
   onClick?: () => void;
   bgColor?: string;
   color?: string;
-  active?: boolean;
 };
 
-export default function Button({ text, bgColor, color, type="button", active=false, onClick }: ButtonProps) {
+export default function Button({ text, bgColor, color, type="button", onClick }: ButtonProps) {
   return (
     <div className="button-group">
       <button
         type={type}
         onClick={onClick}
-        style={{ backgroundColor: bgColor, color: color, active:active }}
+        style={{ backgroundColor: bgColor, color: color }}
       >
       {text}
       </button>
