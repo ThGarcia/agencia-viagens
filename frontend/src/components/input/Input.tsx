@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./Input.css";
 
 type InputProps = {
@@ -6,6 +7,7 @@ type InputProps = {
   type?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   validator?: (value: string) => boolean;
+  errorMessage?: string;
 };
 
 export default function Input({
@@ -13,13 +15,15 @@ export default function Input({
   value,
   type = "text",
   onChange,
-  validator
+  validator,
+  errorMessage = "Campo invalido"
 }: InputProps) {
+  const [hasError, setHasError] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     if (validator) {
-      validator(e.target.value);
+      setHasError(e.target.value.trim() !== "" && !validator(e.target.value));
     }
 
     onChange?.(e);
@@ -37,6 +41,7 @@ export default function Input({
       />
 
       <label>{label}</label>
+      {hasError && <span className="input-error">⚠️ {errorMessage}</span>}
     </div>
   );
 }

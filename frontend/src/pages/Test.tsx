@@ -12,7 +12,7 @@ import Button from "../components/button/Button";
 import SearchInput from "../components/input/InputSearch";
 import SelectInput from "../components/input/InputSelect";
 import { validateFullName, validateCPF, validatePhone } from "../utils/validator";
-import { maskCPF, maskDate, maskPhone, maskCEP, maskBRL } from "../utils/masks";
+import { capitalizeName, maskCPF, maskDate, maskPhone, maskCEP, maskBRL } from "../utils/masks";
 
 export default function Test() {
     const { id } = useParams();
@@ -226,9 +226,10 @@ export default function Test() {
                 label="Nome"
                 value={form.clientName}
                 onChange={(e) =>
-                    setForm({ ...form, clientName: e.target.value })
+                    setForm({ ...form, clientName: capitalizeName(e.target.value) })
                 }
                 validator={validateFullName}
+                errorMessage="Digite nome e sobrenome"
             />
             <Input
                 label="CPF"
@@ -325,7 +326,9 @@ export default function Test() {
                     <Input
                         label="Nome"
                         value={p.name}
-                        onChange={(e) => updatePassenger(i, "name", e.target.value)}
+                        onChange={(e) => updatePassenger(i, "name", capitalizeName(e.target.value))}
+                        validator={validateFullName}
+                        errorMessage="Digite nome e sobrenome"
                     />
                     <Input
                         label="CPF"
@@ -353,6 +356,17 @@ export default function Test() {
             <Button
                 onClick={async () => {
                     if (!contract?.id) return;
+
+                    if (!validateFullName(form.clientName)) {
+                        alert("Informe o nome completo do cliente.");
+                        return;
+                    }
+
+                    const invalidPassenger = passengers.find((passenger) => !validateFullName(passenger.name));
+                    if (invalidPassenger) {
+                        alert("Informe o nome completo de todos os passageiros.");
+                        return;
+                    }
 
                     try {
                         const payload = {

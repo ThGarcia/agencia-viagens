@@ -7,6 +7,18 @@ export function maskCPF(value: string) {
         .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
+// RG → 00.000.000-0
+export function maskRG(value: string) {
+    const digits = value
+        .replace(/[^\dXx]/g, "")
+        .toUpperCase()
+        .slice(0, 9);
+    return digits
+        .replace(/(\d{2})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})([\dX])$/, "$1-$2");
+}
+
 // Date → dd/mm/yyyy
 export function maskDate(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 8);

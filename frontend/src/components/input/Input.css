@@ -70,3 +70,10 @@
   font-size: 12px;
   color: #fff;
 }
+
+.input-error {
+  display: block;
+  margin-top: 4px;
+  color: #ff8a8a;
+  font-size: 12px;
+}

@@ -8,8 +8,8 @@ import type { Passenger, ContractRequest } from "../types/contract";
 import Loader from "../components/Loader";
 import Input from "../components/input/Input";
 import Button from "../components/button/Button";
-import { normalizeHouseNumber, validateCPF, validateDate, validateFullName, validatePhone } from "../utils/validator";
-import { maskCEP, maskCPF, maskDate, maskPhone } from "../utils/masks";
+import { normalizeHouseNumber, validateCPF, validateRG, validateDate, validateFullName, validatePhone } from "../utils/validator";
+import { capitalizeName, maskCEP, maskCPF, maskRG, maskDate, maskPhone } from "../utils/masks";
 
 export default function CreateContract() {
     const [params] = useSearchParams();
@@ -62,6 +62,7 @@ export default function CreateContract() {
         try {
             const data: ContractRequest = {
                 ...form,
+                addressNumber: normalizeHouseNumber(form.addressNumber),
                 travelId: travelId,
                 passengers,
             };
@@ -89,9 +90,10 @@ export default function CreateContract() {
                 value={form.clientName}
                 label="Nome"
                 onChange={(e) =>
-                    setForm({ ...form, clientName: e.target.value })
+                    setForm({ ...form, clientName: capitalizeName(e.target.value) })
                 }
                 validator={validateFullName}
+                errorMessage="Digite nome e sobrenome"
             />
             <Input
                 value={form.clientCpf}
@@ -100,13 +102,16 @@ export default function CreateContract() {
                     setForm({ ...form, clientCpf: maskCPF(e.target.value) })
                 }
                 validator={validateCPF}
+                errorMessage="Digite um CPF válido: XXX.XXX.XXX-XX"
             />
             <Input
                 value={form.clientRg}
                 label="RG"
                 onChange={(e) =>
-                    setForm({ ...form, clientRg: e.target.value })
+                    setForm({ ...form, clientRg: maskRG(e.target.value) })
                 }
+                validator={validateRG}
+                errorMessage="Digite um RG válido: XX.XXX.XXX-X"
             />
             <Input
                 value={form.clientBirthDate}
@@ -115,6 +120,7 @@ export default function CreateContract() {
                     setForm({ ...form, clientBirthDate: maskDate(e.target.value) })
                 }
                 validator={validateDate}
+                errorMessage="Escolha uma data valida: dd/mm/aaaa"
             />
             <Input
                 value={form.clientPhone}
@@ -123,6 +129,7 @@ export default function CreateContract() {
                     setForm({ ...form, clientPhone: maskPhone(e.target.value) })
                 }
                 validator={validatePhone}
+                errorMessage="Digite um telefone válido: (xx) xxxxx-xxxx"
             />
 
             <h2>Endereço</h2>
@@ -131,7 +138,7 @@ export default function CreateContract() {
                 value={form.addressStreet}
                 label="Rua"
                 onChange={(e) =>
-                    setForm({ ...form, addressStreet: (e.target.value) })
+                    setForm({ ...form, addressStreet: capitalizeName(e.target.value) })
                 }
             />
             <Input
@@ -145,21 +152,21 @@ export default function CreateContract() {
                 value={form.addressComplement}
                 label="Complemento"
                 onChange={(e) =>
-                    setForm({ ...form, addressComplement: (e.target.value) })
+                    setForm({ ...form, addressComplement: capitalizeName(e.target.value) })
                 }
             />
             <Input
                 value={form.addressNeighborhood}
                 label="Bairro"
                 onChange={(e) =>
-                    setForm({ ...form, addressNeighborhood: (e.target.value) })
+                    setForm({ ...form, addressNeighborhood: capitalizeName(e.target.value) })
                 }
             />
             <Input
                 value={form.addressCity}
                 label="Cidade"
                 onChange={(e) =>
-                    setForm({ ...form, addressCity: (e.target.value) })
+                    setForm({ ...form, addressCity: capitalizeName(e.target.value) })
                 }
             />
             <Input
@@ -175,16 +182,49 @@ export default function CreateContract() {
                 onChange={(e) =>
                     setForm({ ...form, addressZip: maskCEP(e.target.value) })
                 }
+                errorMessage="Digite um CEP vãlido: xxxxx-xxx"
             />
 
             <h2>Passageiros</h2>
 
-            {passengers.map((_, i) => (
+            {passengers.map((p, i) => (
                 <div key={i}>
-                    <Input label="Nome" onChange={(e) => updatePassenger(i, "name", e.target.value)} />
-                    <Input label="CPF" onChange={(e) => updatePassenger(i, "cpf", maskCPF(e.target.value))} />
-                    <Input label="RG" onChange={(e) => updatePassenger(i, "rg", e.target.value)} />
-                    <Input label="data nascimento" onChange={(e) => updatePassenger(i, "birthDate", maskDate(e.target.value))} />
+                    <Input
+                        label="Nome"
+                        value={p.name}
+                        onChange={(e) =>
+                            updatePassenger(i, "name", capitalizeName(e.target.value))
+                        }
+                        validator={validateFullName}
+                        errorMessage="Digite nome e sobrenome"
+                    />
+                    <Input
+                        label="CPF"
+                        value={p.cpf}
+                        onChange={(e) =>
+                            updatePassenger(i, "cpf", maskCPF(e.target.value))
+                        }
+                        validator={validateCPF}
+                        errorMessage="Digite um CPF válido: XXX.XXX.XXX-XX"
+                    />
+                    <Input
+                        label="RG"
+                        value={p.rg}
+                        onChange={(e) =>
+                            updatePassenger(i, "rg", maskRG(e.target.value))
+                        }
+                        validator={validateRG}
+                        errorMessage="Digite um RG válido: XX.XXX.XXX-X"
+                    />
+                    <Input
+                        label="data nascimento"
+                        value={p.birthDate}
+                        onChange={(e) =>
+                            updatePassenger(i, "birthDate", maskDate(e.target.value))
+                        }
+                        validator={validateDate}
+                        errorMessage=" Escolha uma data valida: dd/mm/aaaa"
+                    />
                 </div>
             ))}
 

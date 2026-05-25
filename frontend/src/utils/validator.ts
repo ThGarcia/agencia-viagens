@@ -26,6 +26,19 @@ export function validateCPF(cpf: string) {
     return secondDigit === Number(clean[10]);
 }
 
+// RG validator format: 00.000.000-0
+export function validateRG(rg: string) {
+    if (!rg) return false;
+    const clean = rg.replace(/[^\dXx]/g, "");
+    if (clean.length < 7 || clean.length > 9) {
+        return false;
+    }
+    if (/^(\w)\1+$/.test(clean)) {
+        return false;
+    }
+    return /^\d{1,8}[\dXx]$/.test(clean);
+}
+
 // Phone Validator: format (xx) xxxxx-xxxx || (xx) xxxx-xxxx
 export function validatePhone(phone: string) {
     const digits = phone.replace(/\D/g, "");
@@ -50,7 +63,7 @@ export async function fetchAddressByCEP(cep: string) {
     const clean = cep.replace(/\D/g, "");
     if (clean.length !== 8) return null;
     try {
-        const res = await fetch("https://viacep.com.br/ws/${clean}/json/");
+        const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
         const data = await res.json();
         if (data.erro) return null;
         return {
