@@ -26,10 +26,16 @@
 .table-data {
     width: 100%;
     border-collapse: collapse;
+    text-align: center;
 }
 
 .table-data th, 
 .table-data td {
     border: 1px solid #FFF;
     text-align: center;
+    padding: 8px;
+}
+
+.table-empty {
+    padding: 20px;
 }

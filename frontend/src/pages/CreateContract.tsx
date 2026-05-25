@@ -203,7 +203,7 @@ export default function CreateContract() {
             />
             <Input
                 value={form.clientBirthDate}
-                label="data nascimento"
+                label="Data de nascimento"
                 onChange={(e) =>
                     setForm({ ...form, clientBirthDate: maskDate(e.target.value) })
                 }
@@ -304,7 +304,7 @@ export default function CreateContract() {
                         errorMessage="Digite um RG válido: XX.XXX.XXX-X"
                     />
                     <Input
-                        label="data nascimento"
+                        label="Data de nascimento"
                         value={p.birthDate}
                         onChange={(e) =>
                             updatePassenger(i, "birthDate", maskDate(e.target.value))

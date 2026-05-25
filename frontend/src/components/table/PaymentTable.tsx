@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { clientPayment } from "../../services/contractService";
 import type { ContractResponse } from "../../types/contract";
+import { maskTableCurrency, maskTableDate } from "../../utils/masks";
 import "./Table.css";
 
 import Input from "../input/Input";
 import Button from "../button/Button";
+import DataTable from "./DataTable";
 
 type PaymentProps = {
     contract: ContractResponse;
@@ -48,6 +50,15 @@ export default function PaymentTable({ contract, reload }: PaymentProps) {
     };
 
     const data = paymentInputs[contract.id] || { price: null, type: "" };
+    const paymentRows = contract.clientPayments?.map((payment, index) => [
+        `R$ ${maskTableCurrency(payment.paymentPrice)}`,
+        payment.paymentType,
+        maskTableDate(payment.paymentDay),
+        `R$ ${maskTableCurrency(contract.priceTotal - contract.clientPayments
+            .slice(0, index + 1)
+            .reduce((sum, p) => sum + p.paymentPrice, 0)
+        )}`,
+    ]) || [];
 
     return (
         <div className="table-group">
@@ -93,31 +104,11 @@ export default function PaymentTable({ contract, reload }: PaymentProps) {
                 </div>
             )}
 
-            <table className="table-data">
-                <thead>
-                    <tr>
-                        <th>Valor</th>
-                        <th>Pagamento</th>
-                        <th>Data</th>
-                        <th>Restante</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {contract.clientPayments?.map((payment, index) => (
-                        <tr key={index}>
-                            <td>R$ {payment.paymentPrice?.toFixed(2)}</td>
-                            <td>{payment.paymentType}</td>
-                            <td>{payment.paymentDay}</td>
-                            <td>
-                                R$ {(contract.priceTotal - contract.clientPayments
-                                    .slice(0, index + 1)
-                                    .reduce((sum, p) => sum + p.paymentPrice, 0)
-                                ).toFixed(2)}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <DataTable
+                columns={["Valor", "Pagamento", "Data", "Restante"]}
+                rows={paymentRows}
+                emptyMessage="Nenhum pagamento registrado."
+            />
         </div>
     );
 }

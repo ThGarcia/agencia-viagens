@@ -72,3 +72,27 @@ export function maskBRL(value: number | string) {
         currency: "BRL"
     });
 }
+
+// Money: 1.000,00
+export function maskTableCurrency(value: number | string | null | undefined) {
+    if (value === null || value === undefined || value === "") return "";
+    const number = typeof value === "string"
+        ? Number(value.replace(/\./g, "").replace(",", "."))
+        : value;
+    if (Number.isNaN(number)) return "";
+    return number.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
+
+// Date: mm-dd-yyyy -> dd/mm/yyyy
+export function maskTableDate(value: string | null | undefined) {
+    if (!value) return "";
+
+    const [year, month, day] = value.split("-");
+
+    if (!year || !month || !day) return value;
+
+    return `${day}/${month}/${year}`;
+}
