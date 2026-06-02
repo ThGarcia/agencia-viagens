@@ -5,8 +5,12 @@
     border-radius: 10px;
     padding: 10px;
     gap: 10px;
-    max-width: 520px;
     margin: auto;
+    box-sizing: border-box;
+}
+
+.card-group {
+    width: 100%;
 }
 
 .card-group img {
@@ -49,7 +53,8 @@
 
 .card-description {
     text-align: left;
-    max-width: 500px;
+    width: 100%;
+    padding: 0 10px 10px 10px;
 }
 
 .card-description ul {

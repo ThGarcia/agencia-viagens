@@ -1,7 +1,7 @@
 import "./Button.css";
 
 type ButtonProps = {
-  text: string;
+  text: string | React.ReactNode;
   type?: "button" | "submit";
   onClick?: () => void;
   bgColor?: string;

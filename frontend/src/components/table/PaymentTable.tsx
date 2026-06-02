@@ -99,7 +99,7 @@ export default function PaymentTable({ contract, reload }: PaymentProps) {
                         />
                     </div>
                     <div className="table-button">
-                        <Button onClick={handleAddPayment} text="✅" />
+                        <Button onClick={handleAddPayment} text="✅ Adicionar pagamento" />
                     </div>
                 </div>
             )}

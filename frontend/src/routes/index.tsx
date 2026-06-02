@@ -16,7 +16,7 @@ const AdminRomming = lazy(() => import("../pages/AdminRomming"));
 const AdminRommingList = lazy(() => import("../pages/AdminRommingList"));
 const AdminFinancial = lazy(() => import("../pages/AdminFinancial"));
 const AdminFinancialList = lazy(() => import("../pages/AdminFinancialList"));
-const Test = lazy(() => import("../pages/Test"));
+const EditContract = lazy(() => import("../pages/EditContract"));
 
 import Loader from "../components/Loader";
 
@@ -31,7 +31,13 @@ export default function AppRoutes() {
                     <Route path="/contrato/:token" element={<ContractDetails />} />
                     <Route path="/obrigado" element={<WaitResponse />} />
                     <Route path="/admin" element={<AdminLogin />} />
-                    <Route path="/test/:id" element={<Test />} />
+                    <Route path="/edit/:id"
+                        element={
+                            <ProtectedRoute>
+                                <EditContract />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="/admin/contratos/:id"
                         element={
                             <ProtectedRoute>

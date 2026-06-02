@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getTravelById } from "../services/travelService";
 import type { TravelResponse } from "../types/travel";
+import "../styles/Pages.css";
 
 import Loader from "../components/Loader";
 import CardDetails from "../components/card/CardDetails";
@@ -25,7 +26,7 @@ export default function TravelDetails() {
     if (!travel) return <p>Viagem não encontrada</p>
 
     return (
-        <div>
+        <div className="page-details">
             <CardDetails travel={travel} />
         </div>
     );

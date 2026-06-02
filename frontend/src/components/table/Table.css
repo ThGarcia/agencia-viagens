@@ -6,21 +6,21 @@
 }
 
 .table-payment {
-    display: grid;
-    grid-template-columns: 5fr 1fr;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
 }
 
 .table-inputs {
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
-.table-button {
+.table-button button {
     width: 100%;
-    display: flex;
-    margin: auto;
-    margin-top: 50px;
 }
 
 .table-data {

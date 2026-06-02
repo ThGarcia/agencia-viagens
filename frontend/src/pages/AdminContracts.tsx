@@ -4,7 +4,8 @@ import { getContracts, cancelContract, confirmContract, markAsPaid } from "../se
 import { getTravels } from "../services/travelService";
 import type { ContractResponse } from "../types/contract";
 import type { TravelResponse } from "../types/travel";
-import { maskBRL } from "../utils/masks";
+import { maskBRL, maskTableCurrency } from "../utils/masks";
+import "../styles/Pages.css";
 
 import PaymentTable from "../components/table/PaymentTable";
 import Button from "../components/button/Button";
@@ -86,6 +87,22 @@ export default function AdminContracts() {
         { value: "CANCELLED", label: `Cancelados (${countByStatus("CANCELLED")})`, color: "#7f8c8d" },
     ];
 
+    const payments = (contract: ContractResponse) => {
+        const paid =
+            contract.clientPayments?.reduce(
+                (sum, payment) => sum + payment.paymentPrice,
+                0
+            ) || 0;
+
+        const remaining = Math.max(contract.priceTotal - paid, 0);
+
+        return {
+            paid: maskTableCurrency(paid),
+            remaining: maskTableCurrency(remaining),
+        };
+    };
+
+
     return (
         <div style={{ padding: 20 }}>
             <h1>Painel de Contratos</h1>
@@ -118,59 +135,64 @@ export default function AdminContracts() {
             />
 
             {Object.keys(grouped).map((travel) => (
-                <div key={travel} style={{ marginBottom: 30 }}>
+                <div key={travel}>
                     <h2>{travel}</h2>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "15px" }}>
-                        {grouped[travel].map((contract) => (
-                            <div key={contract.id} style={cardStyle}>
-                                <h3>{contract.clientName}</h3>
-                                <p><strong>Status:</strong> {contract.status}</p>
-                                <p><strong>Total:</strong> {maskBRL(contract.priceTotal)}</p>
-                                <p><strong>Pagamento:</strong> {contract.paymentMethod}</p>
+                    <div className="card-contract-list">
+                        {grouped[travel].map((contract) => {
+                            const whatsapp = `https://wa.me/55${contract.clientPhone}`;
+                            const { paid, remaining } = payments(contract);
 
-                                {(contract.status === "APPROVED" || contract.status === "PAID") && (
-                                    <PaymentTable contract={contract} reload={loadData} />
-                                )}
+                            return (
+                                <div key={contract.id} className="card-contract">
+                                    <div className="card-contract-header">
+                                        <h3>{contract.clientName}</h3>
+                                        <h3><a href={whatsapp} target="_blank">
+                                            <i className="ri-whatsapp-line"></i> {contract.clientPhone}
+                                        </a></h3>
+                                    </div>
+                                    <p><strong>Status:</strong> {contract.status}</p>
+                                    <div className="card-contract-header">
+                                        <p><strong>Total:</strong> {maskBRL(contract.priceTotal)}</p>
+                                        <p><strong>Pago:</strong> R$ {paid}</p>
+                                        <p><strong>Falta:</strong> R$ {remaining}</p>
+                                    </div>
 
-                                <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginTop: "10px" }}>
-                                    {contract.status === "PENDING" && (
-                                        <Button onClick={() => navigate(`/admin/contratos/${contract.id}`)} text="Analisar e Aprovar" bgColor="#f1c40f" color="#FFF" />
+                                    {(contract.status === "APPROVED" || contract.status === "PAID") && (
+                                        <PaymentTable contract={contract} reload={loadData} />
                                     )}
 
-                                    {contract.tokenAccess && (
-                                        <Button onClick={() => handleViewClientContract(contract.tokenAccess!)} text="Ver Contrato" bgColor="#34495e" color="#FFF" />
-                                    )}
+                                    <div className="card-contract-buttons">
+                                        {contract.status === "PENDING" && (
+                                            <Button onClick={() => navigate(`/admin/contratos/${contract.id}`)} text="Pendente" bgColor="#f1c40f" color="#FFF" />
+                                        )}
 
-                                    {contract.tokenAccess && (
-                                        <Button onClick={() => { navigate(`/test/${contract.id}`); }} text="Editar Contrato" bgColor="#9b59b6" color="#FFF" />
-                                    )}
+                                        {contract.tokenAccess && (
+                                            <Button onClick={() => handleViewClientContract(contract.tokenAccess!)} text="Ver Contrato" bgColor="#34495e" color="#FFF" />
+                                        )}
 
-                                    {contract.status === "APPROVED" && (
-                                        <Button onClick={() => handleMarkAsPaid(contract.id)} text="Marcar como Pago" bgColor="#3498db" color="#FFF" />
-                                    )}
+                                        {contract.tokenAccess && (
+                                            <Button onClick={() => { navigate(`/edit/${contract.id}`); }} text="Editar Contrato" bgColor="#9b59b6" color="#FFF" />
+                                        )}
 
-                                    {contract.status === "PAID" && (
-                                        <Button onClick={() => handleConfirm(contract.id)} text="Confirmar Vaga" bgColor="#2ecc71" color="#FFF" />
-                                    )}
+                                        {contract.status === "APPROVED" && (
+                                            <Button onClick={() => handleMarkAsPaid(contract.id)} text="Marcar Pago" bgColor="#3498db" color="#FFF" />
+                                        )}
 
-                                    {contract.status !== "CANCELLED" && (
-                                        <Button onClick={() => handleCancel(contract.id)} text="Cancelar" bgColor="#e74c3c" color="#FFF" />
-                                    )}
+                                        {contract.status === "PAID" && (
+                                            <Button onClick={() => handleConfirm(contract.id)} text="Confirmar Vaga" bgColor="#2ecc71" color="#FFF" />
+                                        )}
+
+                                        {contract.status !== "CANCELLED" && (
+                                            <Button onClick={() => handleCancel(contract.id)} text="Cancelar" bgColor="#e74c3c" color="#FFF" />
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             ))}
         </div>
     );
 }
-
-const cardStyle = {
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    padding: "15px",
-    backgroundColor: "#363636fe",
-    boxShadow: "2px 2px 5px rgba(0,0,0,0.05)"
-};
