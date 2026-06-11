@@ -4,6 +4,8 @@ import { getTravels, createTravel, updateTravel, activateTravel, deactivateTrave
 
 import Input from "../components/input/Input";
 import Button from "../components/button/Button";
+import { normalizeHouseNumber, validateCPF, validateRG, validateDate, validateFullName, validatePhone, validateCEP, fetchAddressByCEP } from "../utils/validator";
+import { capitalizeName, maskCEP, maskCPF, maskRG, maskDate, maskPhone, maskBRL, parseBRL } from "../utils/masks";
 
 interface TravelFormState extends Omit<Partial<TravelResponse>, 'inclusions' | 'observations'> {
     inclusions: string;
@@ -94,35 +96,86 @@ export default function AdminTravels() {
             <div style={{ border: "1px solid #ccc", padding: 10, marginBottom: 20 }}>
                 <h2>{selected ? "Editar Viagem" : "Nova Viagem"}</h2>
 
-                <Input label="Título" value={form.title || ""}
-                    onChange={e => setForm({ ...form, title: e.target.value })} />
+                <Input 
+                    label="Título" 
+                    value={form.title || ""}
+                    onChange={e => 
+                        setForm({ ...form, title: capitalizeName(e.target.value) })
+                    } 
+                    validator={validateFullName}
+                    errorMessage="Digite o destino da viagem"
+                />
 
-                <Input label="Subtítulo" value={form.subtitle || ""}
-                    onChange={e => setForm({ ...form, subtitle: e.target.value })} />
+                <Input 
+                    label="Subtítulo" 
+                    value={form.subtitle || ""}
+                    onChange={e => 
+                        setForm({ ...form, subtitle: e.target.value })
+                    }
+                    validator={validateFullName}
+                    errorMessage="Digite uma descrição da imagem"
+                />
 
-                <Input label="Descrição" value={form.description || ""}
-                    onChange={e => setForm({ ...form, description: e.target.value })} />
+                <Input 
+                    label="Descrição" 
+                    value={form.description || ""}
+                    onChange={e => 
+                        setForm({ ...form, description: e.target.value })
+                    }
+                    validator={validateFullName}
+                    errorMessage="Digite uma descrição da viagem"
+                />
 
-                <Input label="Imagem URL (/images/...)" value={form.imageUrl || ""}
-                    onChange={e => setForm({ ...form, imageUrl: e.target.value })} />
+                <Input 
+                    label="Imagem URL (/images/...)" 
+                    value={form.imageUrl || ""}
+                    onChange={e => 
+                        setForm({ ...form, imageUrl: e.target.value })
+                    }
+                />
 
-                <Input label="Data saída" value={form.departureDate || ""}
-                    onChange={e => setForm({ ...form, departureDate: e.target.value })} />
+                <Input 
+                    label="Data saída" 
+                    value={form.departureDate || ""}
+                    onChange={e => 
+                        setForm({ ...form, departureDate: maskDate(e.target.value) })
+                    }
+                    validator={validateDate}
+                    errorMessage="Digite uma data de saída válida"
+                />
 
-                <Input label="Data retorno" value={form.returnDate || ""}
-                    onChange={e => setForm({ ...form, returnDate: e.target.value })} />
+                <Input 
+                    label="Data retorno" 
+                    value={form.returnDate || ""}
+                    onChange={e => 
+                        setForm({ ...form, returnDate: maskDate(e.target.value) })
+                    }
+                    validator={validateDate}
+                    errorMessage="Digite uma data de retorno válida"
+                />
 
-                <Input type="number" label="Preço"
-                    value={form.priceBase || 0}
-                    onChange={e => setForm({ ...form, priceBase: Number(e.target.value) })} />
+                <Input
+                    label="Preço"
+                    value={maskBRL(form.priceBase || "")}
+                    onChange={e => 
+                        setForm({ ...form, priceBase: parseBRL(e.target.value) })
+                    } 
+                />
 
-                <textarea placeholder="Inclusões (1 por linha)"
+                <textarea 
+                    placeholder="Inclusões (1 por linha)"
                     value={form.inclusions || ""}
-                    onChange={e => setForm({ ...form, inclusions: e.target.value })} />
+                    onChange={e => 
+                        setForm({ ...form, inclusions: e.target.value })
+                    } 
+                />
 
-                <textarea placeholder="Observações (1 por linha)"
+                <textarea 
+                    placeholder="Observações (1 por linha)"
                     value={form.observations || ""}
-                    onChange={e => setForm({ ...form, observations: e.target.value })} />
+                    onChange={e => 
+                        setForm({ ...form, observations: e.target.value })
+                    } />
 
                 <Button onClick={handleSave} text="Salvar" />
             </div>

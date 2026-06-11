@@ -60,6 +60,11 @@ export function capitalizeName(value: string) {
         .join(" ");
 }
 
+// Convert BRL string to number, e.g. "R$ 1.234,56" → 1234.56
+export function parseBRL(value: string) {
+    return Number(value.replace(/\D/g, "")) / 100;
+}
+
 // Format -> money value 0.000,00
 export function maskBRL(value: number | string) {
 

@@ -1,7 +1,7 @@
 .card-group,
 .card-details {
     display: flex;
-    border: 1px solid #FFF;
+    border: 1px solid var(--color-black);
     border-radius: 10px;
     padding: 10px;
     gap: 10px;
@@ -31,16 +31,20 @@
 .card-group button,
 .card-details button {
     width: 100%;
+    flex: 1;
+    display: flex;
 }
 
 .card-details {
     flex-direction: column;
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
+    height: 100dvh;
+    box-sizing: border-box;
 }
 
 .card-details img {
-    max-width: 500px;
-    height: 250px;
     border-radius: 5px;
     object-fit: cover;
     object-position: center;
@@ -48,7 +52,14 @@
 
 .card-subtitle {
     font-size: smaller;
-    margin-top: -10px;   
+    text-align: center;
+}
+
+.card-title {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
 }
 
 .card-description {
@@ -68,11 +79,13 @@
 .card-contact {
     text-align: center;
     margin: 10px 0;
+    width: 100%;
 }
 
 .card-contact-phones {
     display: flex;
     justify-content: space-around;
+    width: 100%;
 }
 
 .card-contact-phones a {
@@ -86,4 +99,13 @@
 .card-value {
     text-align: right;
     margin: 10px 0;
+}
+
+@media (min-width: 1200px) {
+    .card-details {
+        width: 40%;
+        height: 100%;
+    }
+
+    
 }

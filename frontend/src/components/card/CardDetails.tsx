@@ -15,15 +15,18 @@ export default function CardDetails({ travel }: Props) {
 
     return (
         <div className="card-details">
-            <img
-                src={travel.imageUrl}
-                alt={travel.title}
-            />
-            <p className="card-subtitle">{travel.subtitle}</p>
-            <h2>{travel.title}</h2>
-            <p>De {travel.departureDate} à {travel.returnDate}</p>
+            <div>
+                <img
+                    src={travel.imageUrl}
+                    alt={travel.title}
+                />
+                <p className="card-subtitle">{travel.subtitle}</p>
+            </div>
+            <div className="card-title">
+                <h2>{travel.title}</h2>
+                <p>De {travel.departureDate} à {travel.returnDate}</p>
+            </div>
             <div className="card-description">
-                <p>{travel.slug}</p>
                 <p>{travel.description}</p>
                 {travel.inclusions?.length > 0 && (
                     <div>
@@ -46,7 +49,10 @@ export default function CardDetails({ travel }: Props) {
                         </ul>
                     </div>
                 )}
-                <p className="card-contact">Entre em contato conosco:</p>
+
+            </div>
+            <div className="card-contact">
+                <p>Entre em contato conosco:</p>
                 <div className="card-contact-phones">
                     <a href={`tel:${phoneNumber}`}>
                         Telefone
@@ -56,19 +62,19 @@ export default function CardDetails({ travel }: Props) {
                     </a>
                 </div>
                 <p className="card-value">
-                    {" "}
-                    {travel.priceBase.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                    })}
+                    {travel.priceBase > 0
+                        ? travel.priceBase.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                        })
+                        : "Consulte-nos"}
                 </p>
 
-                <Button
-                    text="Contratar"
-                    onClick={() => navigate(`/contrato?travelId=${travel.id}`)}
-                />
             </div>
-
+            <Button
+                text="Contratar"
+                onClick={() => navigate(`/contrato?travelId=${travel.id}`)}
+            />
         </div>
     );
 }
