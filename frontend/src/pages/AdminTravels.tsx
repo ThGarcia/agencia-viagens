@@ -4,8 +4,8 @@ import { getTravels, createTravel, updateTravel, activateTravel, deactivateTrave
 
 import Input from "../components/input/Input";
 import Button from "../components/button/Button";
-import { normalizeHouseNumber, validateCPF, validateRG, validateDate, validateFullName, validatePhone, validateCEP, fetchAddressByCEP } from "../utils/validator";
-import { capitalizeName, maskCEP, maskCPF, maskRG, maskDate, maskPhone, maskBRL, parseBRL } from "../utils/masks";
+import { validateDate, validateFullName } from "../utils/validator";
+import { capitalizeName, maskDate, maskBRL, parseBRL } from "../utils/masks";
 
 interface TravelFormState extends Omit<Partial<TravelResponse>, 'inclusions' | 'observations'> {
     inclusions: string;
