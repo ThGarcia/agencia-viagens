@@ -55,6 +55,10 @@ export default function CardDetails({ travel }: Props) {
             </div>
             <div className="card-contact">
                 <p>Entre em contato conosco:</p>
+
+            </div>
+            <div className="card-contact">
+                <p>Entre em contato conosco:</p>
                 <div className="card-contact-phones">
                     <a href={`tel:${phoneNumber}`}>
                         Telefone
@@ -64,6 +68,12 @@ export default function CardDetails({ travel }: Props) {
                     </a>
                 </div>
                 <p className="card-value">
+                    {travel.priceBase > 0
+                        ? travel.priceBase.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                        })
+                        : "Consulte-nos"}
                     {travel.priceBase > 0
                         ? travel.priceBase.toLocaleString("pt-BR", {
                             style: "currency",
