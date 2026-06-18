@@ -1,0 +1,63 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Light Theme */
+:root {
+    /*font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; PROCURAR UMA FONTE*/
+    line-height: 1.5;
+    font-weight: 400;
+
+    --color-primary: #2A20BF;
+    --color-secondary: #C6F000;
+    --color-black: #0D1B2A;
+    --color-white: #ddddd6;
+    --accent-color: #FF9F1C;
+    --color-surface: #ffffff;
+    --color-font: #0F0F14;
+
+    --color-button: #383DB2;
+    --color-button-hover: #000595;
+    --color-button-font: #F5F6FA;
+
+    --color-border: #0F0F14;
+    --color-shadow: rgba(0, 0, 0, 0.5);
+
+    --color-valid: #0cd402;
+    --color-warning: #ec8c05;
+    --color-alert: #ff0019;
+    --color-alert-hover: #63000a;
+    --color-disabled: #686868;
+
+    color-scheme: light dark;
+}
+
+/* Dark Theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+
+        --color-primary: #00B4D8;
+        --color-secondary: #0077B6;
+        --color-black: #F2F4F7;
+        --color-white: #1E293B;
+
+        --color-bg: #0F111A;
+        --color-surface: #1A1D2B;
+        --color-font: #F5F6FA;
+
+        --color-button: #5A5FFF;
+        --color-button-hover: #7C80FF;
+        --color-button-font: #F5F6FA;
+
+        --color-border: transparent;
+        --color-shadow: rgba(255, 255, 255, 0.25);
+
+        --color-valid: #35ff5a;
+        --color-warning: #ffb347;
+        --color-alert: #ff4d4d;
+        --color-alert-hover: #ff1a1a;
+        --color-disabled: #9a9a9a;
+    }
+}

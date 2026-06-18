@@ -103,10 +103,5 @@ export function validateDate(date: string) {
         return false;
     }
 
-    const today = new Date();
-    const inputDate = new Date(year, month - 1, day);
-    if (inputDate > today) {
-        return false;
-    }
     return true;
 }

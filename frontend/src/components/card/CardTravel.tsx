@@ -19,8 +19,8 @@ export default function CardTravel({ travel }: Props) {
 
       <div className="card-text">
         <div>
-          <h2>🚌 {travel.title}</h2>
-          <p>📝 {travel.description}</p>
+          <h2 className="card-trip">🚌 {travel.title}</h2>
+          <p className="card-trip">📝 {travel.description}</p>
           <p>📅 Ida: {travel.departureDate}</p>
           <p>📅 Volta: {travel.returnDate}</p>
           <p>

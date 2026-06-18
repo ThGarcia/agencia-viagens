@@ -1,11 +1,13 @@
 .button-group button {
+    width: 100%;
+    text-align: center;
     padding: 5px 10px;
     border-radius: 10px;
-    background-color: #C6F000;
+    background-color: var(--color-secondary);
     font-weight: bolder;
 }
 
 .button-group button:hover {
-    background-color: #FF9F1C;
+    background-color: var(--accent-color);
     color: #FFF;
 }
